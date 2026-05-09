@@ -7,8 +7,12 @@
 
             <div class="flex justify-between items-center mb-10 relative z-10">
                 <div class="flex items-center gap-4">
-                    <div class="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
-                        <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=6366f1&color=fff" class="h-10 w-10 rounded-xl" alt="Avatar">
+                    <div class="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center overflow-hidden">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="h-full w-full object-cover" alt="Avatar">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=6366f1&color=fff" class="h-full w-full object-cover" alt="Avatar">
+                        @endif
                     </div>
                     <div>
                         <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest">Welcome back,</p>

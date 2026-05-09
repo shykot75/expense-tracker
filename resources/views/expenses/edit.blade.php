@@ -32,6 +32,20 @@
         applyCalc() {
             if (this.calcDisplay) this.calculate();
             this.showCalc = false;
+        },
+
+        validate(e) {
+            if (!this.amount || parseFloat(this.amount) <= 0) {
+                alert('Please enter a valid amount greater than 0');
+                e.preventDefault();
+                return false;
+            }
+            if (!this.selectedCatId) {
+                alert('Please select a category');
+                e.preventDefault();
+                return false;
+            }
+            return true;
         }
     }">
         <!-- Header -->
@@ -56,7 +70,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('expenses.update', $expense) }}" method="POST" class="space-y-6" id="update-form">
+            <form action="{{ route('expenses.update', $expense) }}" method="POST" class="space-y-6" id="update-form" @submit="validate($event)">
                 @csrf
                 @method('PUT')
                 
@@ -88,7 +102,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <template x-for="cat in (categories[tab] || [])" :key="cat.id">
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer hidden" required>
+                                <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer sr-only" required>
                                 <div class="p-5 rounded-3xl border-2 border-slate-100 bg-white peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-center shadow-sm">
                                     <p class="text-sm font-black" x-text="cat.name"></p>
                                 </div>

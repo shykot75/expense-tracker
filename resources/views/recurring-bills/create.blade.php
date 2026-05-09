@@ -28,6 +28,15 @@
         applyCalc() {
             if (this.calcDisplay) this.calculate();
             this.showCalc = false;
+        },
+
+        validate(e) {
+            if (!this.amount || parseFloat(this.amount) <= 0) {
+                alert('Please enter a valid amount greater than 0');
+                e.preventDefault();
+                return false;
+            }
+            return true;
         }
     }">
         <!-- Header -->
@@ -44,7 +53,7 @@
         </div>
 
         <div class="px-6 -mt-12 pb-24">
-            <form action="{{ route('recurring-bills.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('recurring-bills.store') }}" method="POST" class="space-y-6" @submit="validate($event)">
                 @csrf
                 
                 <!-- Amount Card -->

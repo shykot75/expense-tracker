@@ -247,10 +247,12 @@
                 }
             }
 
-            incomeInput.addEventListener('input', updateValues);
-            sliders.forEach(slider => slider.addEventListener('input', updateValues));
+            if (incomeInput) incomeInput.addEventListener('input', updateValues);
+            sliders.forEach(slider => {
+                if (slider) slider.addEventListener('input', updateValues);
+            });
             
-            updateValues();
+            if (incomeInput && sliders.length > 0) updateValues();
         });
     </script>
 </x-app-layout>
