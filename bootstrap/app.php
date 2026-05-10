@@ -17,4 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
+    })
+    ->withSchedule(function ($schedule) {
+        $schedule->command('app:process-recurring-bills')->daily();
     })->create();

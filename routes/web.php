@@ -6,6 +6,10 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecurringBillController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SavingsGoalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -41,5 +45,31 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Settings Hub
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings/budget', [SettingsController::class, 'updateBudget'])->name('settings.updateBudget');
+    Route::put('settings/categories/{category}', [SettingsController::class, 'updateCategory'])->name('settings.updateCategory');
+    Route::delete('settings/categories/{category}', [SettingsController::class, 'deleteCategory'])->name('settings.deleteCategory');
+    Route::post('settings/reset', [SettingsController::class, 'resetData'])->name('settings.reset');
+
+    // Loans Tracker
+    Route::get('loans', [LoanController::class, 'index'])->name('loans.index');
+    Route::get('loans/create', [LoanController::class, 'create'])->name('loans.create');
+    Route::post('loans', [LoanController::class, 'store'])->name('loans.store');
+    Route::get('loans/{loan}/edit', [LoanController::class, 'edit'])->name('loans.edit');
+    Route::put('loans/{loan}', [LoanController::class, 'update'])->name('loans.update');
+    Route::post('loans/{loan}/toggle', [LoanController::class, 'toggleStatus'])->name('loans.toggle');
+    Route::delete('loans/{loan}', [LoanController::class, 'destroy'])->name('loans.destroy');
+
+    Route::post('recurring-bills/{recurring_bill}/toggle', [RecurringBillController::class, 'toggleStatus'])->name('recurring-bills.toggle');
     Route::resource('recurring-bills', RecurringBillController::class);
+
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/download', [ReportController::class, 'downloadPdf'])->name('reports.download');
+
+    // Savings Goals
+    Route::post('/savings-goals', [SavingsGoalController::class, 'store'])->name('savings-goals.store');
+    Route::put('/savings-goals/{goal}', [SavingsGoalController::class, 'update'])->name('savings-goals.update');
+    Route::post('/savings-goals/{goal}/contribute', [SavingsGoalController::class, 'contribute'])->name('savings-goals.contribute');
+    Route::delete('/savings-goals/{goal}', [SavingsGoalController::class, 'destroy'])->name('savings-goals.destroy');
 });

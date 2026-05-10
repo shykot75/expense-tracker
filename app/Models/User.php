@@ -6,6 +6,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Income;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -79,6 +80,21 @@ class User extends Authenticatable
     public function loans()
     {
         return $this->hasMany(Loan::class);
+    }
+
+    public function achievements()
+    {
+        return $this->hasMany(Achievement::class);
+    }
+
+    public function savingsGoals()
+    {
+        return $this->hasMany(SavingsGoal::class);
+    }
+
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
     }
 
     public function monthlyHistories()

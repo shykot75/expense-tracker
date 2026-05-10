@@ -1,6 +1,76 @@
 <x-app-layout>
+    <!-- Chart.js and Logic at the top for instant availability -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Move data to global constants to avoid HTML attribute quote conflicts
+        const CHART_DATA = @json($catBreakdown);
+        const CHART_TOTAL = {{ $totalSpend ?: 1 }};
+
+        function renderExpenseChart() {
+            // Wait for DOM to be fully stable
+            setTimeout(() => {
+                const canvas = document.getElementById('categoryChart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(CHART_DATA),
+                        datasets: [{
+                            data: Object.values(CHART_DATA),
+                            backgroundColor: [
+                                '#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#ef4444', 
+                                '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6'
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 25,
+                            borderRadius: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '72%',
+                        animation: { duration: 1500, easing: 'easeOutQuart' },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 30,
+                                    font: { size: 11, weight: '700', family: 'Outfit' },
+                                    generateLabels: (chart) => {
+                                        const chartData = chart.data;
+                                        return chartData.labels.map((label, i) => {
+                                            const val = chartData.datasets[0].data[i];
+                                            const perc = ((val / CHART_TOTAL) * 100).toFixed(1);
+                                            return {
+                                                text: `${label} (${perc}%)`,
+                                                fillStyle: chartData.datasets[0].backgroundColor[i],
+                                                strokeStyle: 'transparent',
+                                                pointStyle: 'circle',
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                padding: 15,
+                                callbacks: {
+                                    label: (ctx) => ` ৳${ctx.raw.toLocaleString()} (${((ctx.raw/CHART_TOTAL)*100).toFixed(1)}%)`
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 50); 
+        }
+    </script>
+
     <div class="min-h-screen bg-slate-50" x-data="{
-        showFilters: false,
         month: '{{ $month }}',
         year: '{{ $year }}',
         
@@ -31,7 +101,7 @@
             </div>
 
             <!-- Total Card -->
-            <div class="bg-white/10 backdrop-blur-md rounded-[3rem] p-8 border border-white/10 text-center relative overflow-hidden group">
+            <div class="bg-white/10 backdrop-blur-md rounded-[3rem] p-8 border border-white/10 text-center">
                 <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest mb-2">Total Monthly Investment</p>
                 <h2 class="text-5xl font-black text-white">৳{{ number_format($totalSpend, 0) }}</h2>
             </div>
@@ -40,18 +110,18 @@
         <div class="px-6 -mt-10 pb-24 space-y-6">
             <!-- Analytics Cards -->
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50">
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Top Category</p>
                     <p class="text-xs font-black text-slate-800 truncate">{{ $highestCat }}</p>
                 </div>
-                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50">
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Most Frugal</p>
                     <p class="text-xs font-black text-slate-800 truncate">{{ $lowestCat }}</p>
                 </div>
             </div>
 
             <!-- Breakdown Chart -->
-            <div class="bg-white p-8 rounded-[3.5rem] shadow-xl shadow-slate-200/50 border border-slate-50">
+            <div class="bg-white p-8 rounded-[3.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 min-h-[450px]">
                 <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-8">Spending Profile</h3>
                 <div class="relative h-80">
                     <canvas id="categoryChart"></canvas>
@@ -68,7 +138,7 @@
                 @endforeach
             </div>
 
-            <!-- Transactions -->
+            <!-- Transactions List -->
             <div class="space-y-4">
                 @forelse($expenses as $expense)
                     <a href="{{ route('expenses.edit', $expense) }}" class="block bg-white p-6 rounded-[3rem] shadow-sm border border-slate-50 flex items-center gap-5 active:scale-95 transition-all">
@@ -91,68 +161,4 @@
             </div>
         </div>
     </div>
-
-    <!-- Chart Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        function renderExpenseChart() {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            const rawData = @json($catBreakdown);
-            const total = {{ $totalSpend ?: 1 }};
-            
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(rawData),
-                    datasets: [{
-                        data: Object.values(rawData),
-                        backgroundColor: [
-                            '#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#ef4444', 
-                            '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6'
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 25,
-                        borderRadius: 15
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '72%',
-                    animation: { duration: 2500, easing: 'easeOutQuart' },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 30,
-                                font: { size: 11, weight: '700', family: 'Outfit' },
-                                generateLabels: (chart) => {
-                                    const data = chart.data;
-                                    return data.labels.map((label, i) => {
-                                        const value = data.datasets[0].data[i];
-                                        const percentage = ((value / total) * 100).toFixed(1);
-                                        return {
-                                            text: `${label} (${percentage}%)`,
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            strokeStyle: 'transparent',
-                                            pointStyle: 'circle',
-                                            index: i
-                                        };
-                                    });
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            padding: 15,
-                            callbacks: {
-                                label: (ctx) => ` ৳${ctx.raw.toLocaleString()} (${((ctx.raw/total)*100).toFixed(1)}%)`
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    </script>
 </x-app-layout>

@@ -56,7 +56,7 @@
                                     <div class="absolute left-5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
                                         <span class="text-2xl font-black text-slate-300">৳</span>
                                     </div>
-                                    <input type="number" name="monthly_income" id="monthly_income" value="32000" required
+                                    <input type="number" name="monthly_income" id="monthly_income" value="32000" 
                                         class="block w-full rounded-3xl border-slate-100 py-5 pl-12 text-2xl font-black text-slate-900 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-600 transition-all bg-slate-50/50">
                                 </div>
                             </div>
@@ -251,6 +251,19 @@
             sliders.forEach(slider => {
                 if (slider) slider.addEventListener('input', updateValues);
             });
+
+            // Prevent empty submit
+            const form = document.getElementById('onboarding-form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    if (!incomeInput.value || parseFloat(incomeInput.value) <= 0) {
+                        e.preventDefault();
+                        window.dispatchEvent(new CustomEvent('notify', { 
+                            detail: { msg: 'Monthly income is required to build your plan', type: 'error' } 
+                        }));
+                    }
+                });
+            }
             
             if (incomeInput && sliders.length > 0) updateValues();
         });

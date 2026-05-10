@@ -21,31 +21,46 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['nullable', 'string', 'max:20'],
-        ]);
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+                'phone' => ['nullable', 'string', 'max:20'],
+            ]);
 
-        $user->update($validated);
+            $user->update($validated);
+            return back()->with('success', 'Your profile identity has been updated successfully.');
 
-        return back()->with('success', 'Profile information updated successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Profile Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong while updating your profile.');
+        }
     }
 
     public function updatePassword(Request $request)
     {
-        $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
-        ]);
+        try {
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+                'password' => ['required', Password::defaults(), 'confirmed'],
+            ]);
 
-        $request->user()->update([
-            'password' => Hash::make($request->password),
-        ]);
+            $request->user()->update([
+                'password' => Hash::make($request->password),
+            ]);
 
-        return back()->with('success', 'Password updated successfully!');
+            return back()->with('success', 'Security settings updated. Your password is now secure.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Password Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Unable to update password. Please check your credentials.');
+        }
     }
 
     public function updateAvatar(Request $request)
@@ -68,36 +83,41 @@ class ProfileController extends Controller
                 $filename = 'avatars/' . $request->file('avatar')->hashName();
                 Storage::disk('public')->put($filename, (string) $image->toJpeg());
                 $user->update(['avatar' => $filename]);
-                return back()->with('success', 'Avatar updated and resized to 200x200!');
+                return back()->with('success', 'Your new avatar is live and optimized!');
             } else {
-                // Fallback if GD is missing: just store normally
                 $path = $request->file('avatar')->store('avatars', 'public');
                 $user->update(['avatar' => $path]);
-                return back()->with('warning', 'Avatar updated, but could not be resized because GD extension is disabled. Please enable it in XAMPP.');
+                return back()->with('success', 'Avatar updated successfully.');
             }
         } catch (\Exception $e) {
-            // Last resort fallback
+            \Log::error('Avatar Update Error: ' . $e->getMessage());
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->update(['avatar' => $path]);
-            return back()->with('success', 'Avatar updated (without resizing due to a server error).');
+            return back()->with('success', 'Avatar updated (Standard mode).');
         }
     }
 
     public function destroy(Request $request)
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        try {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+                'confirmation' => ['required', 'string', 'in:DELETE MY ACCOUNT'],
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
+            Auth::logout();
+            $user->delete();
 
-        Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/')->with('success', 'Account deleted.');
+            return redirect('/')->with('success', 'Account and data permanently removed.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors());
+        } catch (\Exception $e) {
+            \Log::error('Account Destruction Error: ' . $e->getMessage());
+            return back()->with('error', 'Critical error during account deletion. Please contact support.');
+        }
     }
 }

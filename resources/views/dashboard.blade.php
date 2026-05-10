@@ -19,8 +19,14 @@
                         <h1 class="text-xl font-black text-white">{{ explode(' ', Auth::user()->name)[0] }}</h1>
                     </div>
                 </div>
-                <div class="h-12 w-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                <div class="flex items-center gap-2">
+                    <div class="h-12 px-4 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 text-white gap-2">
+                        <span class="text-xl">🔥</span>
+                        <span class="text-sm font-black">{{ Auth::user()->current_streak }}</span>
+                    </div>
+                    <div class="h-12 w-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </div>
                 </div>
             </div>
 
@@ -77,6 +83,53 @@
                     </div>
                 </div>
                 @endforeach
+            </div>
+
+            <!-- Financial Intelligence Hub (New) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Financial Intelligence</h3>
+                </div>
+                <a href="{{ route('reports.index') }}" class="block bg-gradient-to-br from-slate-900 to-indigo-900 p-8 rounded-[3rem] shadow-2xl shadow-indigo-100 relative overflow-hidden active:scale-95 transition-all">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <h3 class="text-xl font-black text-white">Monthly Reports</h3>
+                            <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest mt-1">Analyze spending & export PDF</p>
+                        </div>
+                        <div class="h-14 w-14 bg-white/10 backdrop-blur-md rounded-[1.5rem] flex items-center justify-center border border-white/20 text-white">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 17v-2a4 4 0 014-4h4m0 0l-4-4m4 4l-4 4m5 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2h2"></path></svg>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Loan Tracker Summary (New) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Debt Overview</h3>
+                    <a href="{{ route('loans.index') }}" class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Manage Loans</a>
+                </div>
+                <a href="{{ route('loans.index') }}" class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group active:scale-95 transition-all">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
+                            </div>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Lent</span>
+                        </div>
+                        <p class="text-xl font-black text-slate-900">৳{{ number_format($totalLent, 0) }}</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group active:scale-95 transition-all">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="h-8 w-8 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5-5v12"></path></svg>
+                            </div>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Borrowed</span>
+                        </div>
+                        <p class="text-xl font-black text-slate-900">৳{{ number_format($totalBorrowed, 0) }}</p>
+                    </div>
+                </a>
             </div>
 
             <!-- Recent Activity Section -->

@@ -51,11 +51,16 @@ class DashboardController extends Controller
             ];
         }
 
+        // Loan Totals
+        $loans = $user->loans()->where('status', 'active')->get();
+        $totalLent = $loans->where('loan_type', 'lent')->sum('amount');
+        $totalBorrowed = $loans->where('loan_type', 'borrowed')->sum('amount');
+
         $recentExpenses = $expenses->sortByDesc('expense_date')->take(5);
 
         return view('dashboard', compact(
             'plan', 'totalSpent', 'totalBudget', 'totalRemaining', 
-            'spentPercentage', 'breakdown', 'recentExpenses'
+            'spentPercentage', 'breakdown', 'recentExpenses', 'totalLent', 'totalBorrowed'
         ));
     }
 }

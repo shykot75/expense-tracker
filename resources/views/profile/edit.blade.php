@@ -11,7 +11,39 @@
             </div>
         </div>
 
-        <div class="px-6 -mt-12 pb-32 space-y-8">
+        <div class="px-6 -mt-12 pb-32 space-y-8" x-data="{
+            name: '{{ old('name', $user->name) }}',
+            email: '{{ old('email', $user->email) }}',
+            currentPass: '',
+            newPass: '',
+            confirmPass: '',
+            validateInfo(e) {
+                if (!this.name) {
+                    $dispatch('notify', { msg: 'Name cannot be empty', type: 'error' });
+                    e.preventDefault(); return false;
+                }
+                if (!this.email) {
+                    $dispatch('notify', { msg: 'Valid email is required', type: 'error' });
+                    e.preventDefault(); return false;
+                }
+                return true;
+            },
+            validatePass(e) {
+                if (!this.currentPass) {
+                    $dispatch('notify', { msg: 'Current password required', type: 'error' });
+                    e.preventDefault(); return false;
+                }
+                if (this.newPass.length < 8) {
+                    $dispatch('notify', { msg: 'New password must be at least 8 characters', type: 'error' });
+                    e.preventDefault(); return false;
+                }
+                if (this.newPass !== this.confirmPass) {
+                    $dispatch('notify', { msg: 'Passwords do not match', type: 'error' });
+                    e.preventDefault(); return false;
+                }
+                return true;
+            }
+        }">
             <!-- Notifications -->
             @if(session('success'))
                 <div class="bg-emerald-50 border border-emerald-200 text-emerald-600 px-6 py-4 rounded-3xl font-bold text-sm shadow-sm flex items-center gap-3">
@@ -59,21 +91,21 @@
 
             <!-- Profile Info Form -->
             <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100">
-                <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">
+                <form action="{{ route('profile.update') }}" method="POST" class="space-y-6" @submit="validateInfo($event)">
                     @csrf
                     @method('PATCH')
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                        <input type="text" name="name" value="{{ old('name', $user->name) }}" required 
-                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
+                        <input type="text" name="name" x-model="name" 
+                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('name') border-red-500 @enderror">
                         @error('name') <p class="text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required 
-                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
+                        <input type="email" name="email" x-model="email" 
+                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('email') border-red-500 @enderror">
                         @error('email') <p class="text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -93,27 +125,27 @@
             <!-- Password Change -->
             <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100">
                 <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6">Security</h3>
-                <form action="{{ route('profile.password') }}" method="POST" class="space-y-6">
+                <form action="{{ route('profile.password') }}" method="POST" class="space-y-6" @submit="validatePass($event)">
                     @csrf
                     @method('PUT')
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
-                        <input type="password" name="current_password" required 
-                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
+                        <input type="password" name="current_password" x-model="currentPass" 
+                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('current_password') border-red-500 @enderror">
                         @error('current_password') <p class="text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Password</label>
-                        <input type="password" name="password" required 
-                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
+                        <input type="password" name="password" x-model="newPass" 
+                            class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('password') border-red-500 @enderror">
                         @error('password') <p class="text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
-                        <input type="password" name="password_confirmation" required 
+                        <input type="password" name="password_confirmation" x-model="confirmPass" 
                             class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
                     </div>
 
@@ -146,7 +178,7 @@
                     @csrf
                     @method('DELETE')
                     <div class="mb-4">
-                        <input type="password" name="password" placeholder="Confirm password to delete account" required 
+                        <input type="password" name="password" placeholder="Confirm password to delete account" 
                             class="block w-full rounded-2xl border-slate-100 py-3 px-6 text-center text-xs font-bold text-slate-800 bg-white shadow-sm mb-4">
                     </div>
                     <button type="submit" class="text-slate-400 hover:text-red-500 font-bold text-[10px] uppercase tracking-widest transition-colors">Delete Account Permanently</button>

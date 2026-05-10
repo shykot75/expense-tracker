@@ -6,32 +6,24 @@ use App\Traits\HasAuditColumns;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RecurringBill extends Model
+class Income extends Model
 {
     use HasFactory, HasAuditColumns;
 
     protected $fillable = [
         'user_id',
-        'category_id',
         'amount',
-        'frequency',
         'description',
-        'next_deduction_date',
-        'status',
+        'income_date',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'next_deduction_date' => 'date',
+        'income_date' => 'date',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
     }
 }

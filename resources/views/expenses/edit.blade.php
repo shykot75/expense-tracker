@@ -3,6 +3,32 @@
         tab: '{{ old('budget_type', $expense->category->budget_type) }}',
         categories: {{ $categories->toJson() }},
         selectedCatId: {{ old('category_id', $expense->category_id) }},
+        newCatName: '',
+        isAdding: false,
+        
+        async addCategory() {
+            if (!this.newCatName) return;
+            this.isAdding = true;
+            try {
+                const response = await fetch('{{ url('categories/quick-add') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ name: this.newCatName, budget_type: this.tab })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Error');
+                if (!this.categories[this.tab]) this.categories[this.tab] = [];
+                this.categories[this.tab].push(data);
+                this.newCatName = '';
+            } catch (e) { 
+                $dispatch('notify', { msg: 'Error: ' + e.message, type: 'error' });
+            }
+            this.isAdding = false;
+        },
         
         // Calculator State
         showCalc: false,
@@ -26,7 +52,7 @@
                 this.amount = parseFloat(result).toFixed(2);
                 this.calcDisplay = this.amount;
             } catch (e) {
-                alert('Invalid expression');
+                $dispatch('notify', { msg: 'Invalid calculation expression', type: 'error' });
             }
         },
         applyCalc() {
@@ -36,12 +62,12 @@
 
         validate(e) {
             if (!this.amount || parseFloat(this.amount) <= 0) {
-                alert('Please enter a valid amount greater than 0');
+                $dispatch('notify', { msg: 'Please enter a valid amount greater than 0', type: 'error' });
                 e.preventDefault();
                 return false;
             }
             if (!this.selectedCatId) {
-                alert('Please select a category');
+                $dispatch('notify', { msg: 'Please select a category to continue', type: 'error' });
                 e.preventDefault();
                 return false;
             }
@@ -102,12 +128,27 @@
                     <div class="grid grid-cols-2 gap-3">
                         <template x-for="cat in (categories[tab] || [])" :key="cat.id">
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer sr-only" required>
+                                <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer sr-only">
                                 <div class="p-5 rounded-3xl border-2 border-slate-100 bg-white peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-center shadow-sm">
                                     <p class="text-sm font-black" x-text="cat.name"></p>
                                 </div>
                             </label>
                         </template>
+
+                        <!-- Quick Add -->
+                        <div class="col-span-2 mt-4">
+                            <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-3 flex items-center gap-4 focus-within:border-indigo-500 focus-within:ring-8 focus-within:ring-indigo-50 transition-all shadow-sm">
+                                <div class="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-[1.5rem] flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                </div>
+                                <input type="text" x-model="newCatName" @keyup.enter="addCategory()" placeholder="New category name..." 
+                                    class="flex-1 bg-transparent border-none outline-none ring-0 py-3 text-base font-black text-slate-800 placeholder:text-slate-300 focus:ring-0 focus:outline-none">
+                                <button type="button" @click="addCategory()" class="bg-indigo-600 text-white px-8 py-3.5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-200 active:scale-90 transition-all" :disabled="isAdding">
+                                    <span x-show="!isAdding">Add</span>
+                                    <span x-show="isAdding" class="flex items-center"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -115,7 +156,7 @@
                 <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 space-y-6">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Transaction Date</label>
-                        <input type="date" name="expense_date" value="{{ old('expense_date', $expense->expense_date->format('Y-m-d')) }}" required class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50">
+                        <input type="date" name="expense_date" value="{{ old('expense_date', $expense->expense_date->format('Y-m-d')) }}" class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Description</label>
@@ -133,10 +174,15 @@
 
             <!-- Delete Form (Moved Outside for Safety) -->
             <div class="mt-4">
-                <form action="{{ route('expenses.destroy', $expense) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this?')">
+                <form action="{{ route('expenses.destroy', $expense) }}" method="POST">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="w-full text-red-500 py-4 font-bold text-sm tracking-widest uppercase">Delete Entry</button>
+                    <button type="button" @click="$dispatch('confirm', { 
+                        title: 'Delete Entry?', 
+                        message: 'This will permanently remove this transaction from your history.', 
+                        confirmText: 'Delete',
+                        form: $el.closest('form') 
+                    })" class="w-full text-red-500 py-4 font-bold text-sm tracking-widest uppercase active:scale-95 transition-all">Delete Entry</button>
                 </form>
             </div>
         </div>

@@ -28,7 +28,7 @@
                 this.amount = parseFloat(result).toFixed(2);
                 this.calcDisplay = this.amount;
             } catch (e) {
-                alert('Invalid expression');
+                $dispatch('notify', { msg: 'Invalid calculation expression', type: 'error' });
             }
         },
         applyCalc() {
@@ -54,18 +54,21 @@
                 if (!this.categories[this.tab]) this.categories[this.tab] = [];
                 this.categories[this.tab].push(data);
                 this.newCatName = '';
-            } catch (e) { alert('Error: ' + e.message); }
+                $dispatch('notify', { msg: 'Category added to taxonomy' });
+            } catch (e) { 
+                $dispatch('notify', { msg: 'Error: ' + e.message, type: 'error' });
+            }
             this.isAdding = false;
         },
 
         validate(e) {
             if (!this.amount || parseFloat(this.amount) <= 0) {
-                alert('Please enter a valid amount greater than 0');
+                $dispatch('notify', { msg: 'Please enter a valid amount greater than 0', type: 'error' });
                 e.preventDefault();
                 return false;
             }
             if (!this.selectedCatId) {
-                alert('Please select a category');
+                $dispatch('notify', { msg: 'Please select a category to continue', type: 'error' });
                 e.preventDefault();
                 return false;
             }
@@ -87,7 +90,7 @@
                 @csrf
                 
                 <!-- Amount Card -->
-                <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 text-center relative overflow-hidden active:scale-95 transition-all" @click="showCalc = true; if(!calcDisplay) calcDisplay = amount">
+                <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 text-center relative overflow-hidden active:scale-95 transition-all @error('amount') border-red-500 ring-4 ring-red-50 @enderror" @click="showCalc = true; if(!calcDisplay) calcDisplay = amount">
                     <input type="hidden" name="amount" x-model="amount">
                     <div class="absolute top-0 right-0 p-4">
                         <div class="h-8 w-8 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
@@ -99,6 +102,9 @@
                         <span class="text-3xl font-black text-slate-300">৳</span>
                         <div class="text-5xl font-black text-slate-900" x-text="amount || '0.00'"></div>
                     </div>
+                    @error('amount')
+                        <p class="mt-4 text-[10px] font-black text-red-500 uppercase tracking-widest">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Budget Tabs -->
@@ -114,7 +120,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <template x-for="cat in (categories[tab] || [])" :key="cat.id">
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer sr-only" required>
+                                <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer sr-only">
                                 <div class="p-5 rounded-3xl border-2 border-slate-100 bg-white peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-center shadow-sm">
                                     <p class="text-sm font-black" x-text="cat.name"></p>
                                 </div>
@@ -122,14 +128,17 @@
                         </template>
                         
                         <!-- Quick Add -->
-                        <div class="col-span-2 mt-2">
-                            <div class="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-[2.5rem] p-4 flex items-center gap-3 focus-within:border-indigo-400 transition-all">
-                                <div class="h-10 w-10 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <div class="col-span-2 mt-4">
+                            <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-3 flex items-center gap-4 focus-within:border-indigo-500 focus-within:ring-8 focus-within:ring-indigo-50 transition-all shadow-sm">
+                                <div class="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-[1.5rem] flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                                 </div>
-                                <input type="text" x-model="newCatName" @keyup.enter="addCategory()" placeholder="Add a new custom category..." 
-                                    class="flex-1 bg-transparent border-0 p-0 text-sm font-bold text-slate-700 placeholder:text-indigo-300 focus:ring-0">
-                                <button type="button" @click="addCategory()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all" :disabled="isAdding">Add</button>
+                                <input type="text" x-model="newCatName" @keyup.enter="addCategory()" placeholder="New category name..." 
+                                    class="flex-1 bg-transparent border-none outline-none ring-0 py-3 text-base font-black text-slate-800 placeholder:text-slate-300 focus:ring-0 focus:outline-none">
+                                <button type="button" @click="addCategory()" class="bg-indigo-600 text-white px-8 py-3.5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-200 active:scale-90 transition-all" :disabled="isAdding">
+                                    <span x-show="!isAdding">Add</span>
+                                    <span x-show="isAdding" class="flex items-center"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -139,11 +148,14 @@
                 <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 space-y-6">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Transaction Date</label>
-                        <input type="date" name="expense_date" value="{{ date('Y-m-d') }}" required class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
+                        <input type="date" name="expense_date" value="{{ old('expense_date', date('Y-m-d')) }}" class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('expense_date') border-red-500 @enderror">
+                        @error('expense_date')
+                            <p class="mt-2 ml-4 text-[9px] font-black text-red-500 uppercase tracking-widest">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Description</label>
-                        <input type="text" name="description" placeholder="Optional details..." class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
+                        <input type="text" name="description" value="{{ old('description') }}" placeholder="Optional details..." class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50">
                     </div>
                 </div>
 

@@ -62,18 +62,36 @@ class ExpenseController extends Controller
         return view('expenses.create', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\GamificationService $gamification)
     {
-        $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'expense_date' => ['required', 'date'],
-            'description' => ['nullable', 'string', 'max:255'],
-        ]);
+        try {
+            $request->validate([
+                'category_id' => ['required', 'exists:categories,id'],
+                'amount' => ['required', 'numeric', 'min:0.01'],
+                'expense_date' => ['required', 'date'],
+                'description' => ['nullable', 'string', 'max:255'],
+            ]);
 
-        Auth::user()->expenses()->create($request->all());
+            Auth::user()->expenses()->create($request->all());
 
-        return redirect()->route('dashboard')->with('success', 'Expense added successfully!');
+            // Gamification logic
+            $gamification->updateStreak(Auth::user());
+            $newBadges = $gamification->checkBadges(Auth::user());
+
+            $message = 'Expense recorded successfully!';
+            if (!empty($newBadges)) {
+                $badgeNames = array_map(fn($k) => \App\Services\GamificationService::getBadgeDetails($k)['name'], $newBadges);
+                $message .= ' 🏆 Achievement Unlocked: ' . implode(', ', $badgeNames);
+            }
+
+            return redirect()->route('dashboard')->with('success', $message);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Expense Store Error: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong while saving your expense. Please try again.')->withInput();
+        }
     }
 
     public function edit(Expense $expense)
@@ -87,23 +105,35 @@ class ExpenseController extends Controller
     {
         $this->authorize('update', $expense);
         
-        $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'expense_date' => ['required', 'date'],
-            'description' => ['nullable', 'string', 'max:255'],
-        ]);
+        try {
+            $request->validate([
+                'category_id' => ['required', 'exists:categories,id'],
+                'amount' => ['required', 'numeric', 'min:0.01'],
+                'expense_date' => ['required', 'date'],
+                'description' => ['nullable', 'string', 'max:255'],
+            ]);
 
-        $expense->update($request->all());
+            $expense->update($request->all());
+            return redirect()->route('dashboard')->with('success', 'Expense updated perfectly!');
 
-        return redirect()->route('dashboard')->with('success', 'Expense updated!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Expense Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Unable to update expense. Please check your data.')->withInput();
+        }
     }
 
     public function destroy(Expense $expense)
     {
         $this->authorize('delete', $expense);
-        $expense->delete();
-        return redirect()->route('dashboard')->with('success', 'Expense deleted!');
+        try {
+            $expense->delete();
+            return redirect()->route('dashboard')->with('success', 'Expense removed from your records.');
+        } catch (\Exception $e) {
+            \Log::error('Expense Delete Error: ' . $e->getMessage());
+            return back()->with('error', 'Could not delete this expense. Please contact support if this persists.');
+        }
     }
 
     public function addCategory(Request $request)
