@@ -15,6 +15,20 @@
         goalAmount: '',
         newGoalName: '',
         newGoalTarget: '',
+        selectedIcon: '📁',
+        showIconPicker: false,
+        icons: [
+            '💰', '💳', '🏦', '💹', '💵', '📈', '💎', '🐖', '🏺', /* Finance & Savings */
+            '🏠', '🏢', '🛠️', '🔧', '🧱', /* Home & Tools */
+            '🍔', '🍕', '🌮', '🥪', '🥗', '🥣', '🍽️', '☕', '🥤', '🍻', '🍷', /* Food & Drink */
+            '🛒', '👕', '👜', '👟', '🎁', /* Shopping */
+            '🚗', '🚕', '🚌', '🚄', '✈️', '🚢', '🚲', '⛽', /* Transport & Travel */
+            '🎬', '🍿', '🎮', '🎟️', '🎭', '🎧', '🎸', /* Entertainment */
+            '🏥', '💊', '💉', '🩹', '🩺', '🍎', '🏃', '🧘', /* Health & Wellness */
+            '🧾', '💸', '💡', '🚰', '📶', '🛡️', /* Bills & Security */
+            '🎓', '📚', '🖊️', '💼', '💻', '📱', /* Education & Work */
+            '📁', '⚡', '📅', '📍', '🔔', '✨' /* System & Misc */
+        ],
 
         validateGoal(e) {
             if (!this.newGoalName) {
@@ -58,7 +72,7 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ name: this.newCatName, budget_type: this.catTab })
+                    body: JSON.stringify({ name: this.newCatName, budget_type: this.catTab, icon: this.selectedIcon })
                 });
                 if (!response.ok) throw new Error('Error adding category');
                 window.location.reload(); 
@@ -69,7 +83,7 @@
         }
     }">
         <!-- Header & Profile Quick View -->
-        <div class="bg-gradient-to-br from-slate-900 to-indigo-900 px-6 pt-16 pb-20 rounded-b-[4rem] shadow-2xl">
+        <div class="bg-gradient-to-br from-slate-900 to-indigo-900 px-6 pt-24 pb-20 rounded-b-[4rem] shadow-2xl">
             <div class="flex justify-between items-center mb-8">
                 <h1 class="text-2xl font-black text-white tracking-tight">Settings Hub</h1>
                 <form action="{{ route('logout') }}" method="POST">
@@ -108,13 +122,14 @@
         </div>
 
         <div class="px-6 -mt-10 pb-32 space-y-6">
-            <!-- Segmented Control -->
-            <div class="bg-white p-2 rounded-[2.5rem] shadow-xl border border-slate-100 flex gap-1">
-                <button @click="tab = 'profile'; history.replaceState(null, '', '?tab=profile')" :class="tab === 'profile' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest rounded-[2rem] transition-all">My Profile</button>
-                <button @click="tab = 'budget'; history.replaceState(null, '', '?tab=budget')" :class="tab === 'budget' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Budget Hub</button>
-                <button @click="tab = 'goals'; history.replaceState(null, '', '?tab=goals')" :class="tab === 'goals' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Goals</button>
-                <button @click="tab = 'categories'; history.replaceState(null, '', '?tab=categories')" :class="tab === 'categories' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Taxonomy</button>
-                <button @click="tab = 'achievements'; history.replaceState(null, '', '?tab=achievements')" :class="tab === 'achievements' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Achievements</button>
+            <!-- Segmented Control (Centered & More Readable) -->
+            <div class="bg-white p-2 rounded-[2.5rem] shadow-xl border border-slate-100 flex justify-center gap-1 overflow-x-auto no-scrollbar">
+                <button @click="tab = 'profile'; history.replaceState(null, '', '?tab=profile')" :class="tab === 'profile' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">My Profile</button>
+                <button @click="tab = 'budget'; history.replaceState(null, '', '?tab=budget')" :class="tab === 'budget' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Budget Hub</button>
+                <button @click="tab = 'categories'; history.replaceState(null, '', '?tab=categories')" :class="tab === 'categories' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Taxonomy</button>
+                <button @click="tab = 'goals'; history.replaceState(null, '', '?tab=goals')" :class="tab === 'goals' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Goals</button>
+                <button @click="tab = 'achievements'; history.replaceState(null, '', '?tab=achievements')" :class="tab === 'achievements' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Achievements</button>
+                <button @click="tab = 'forecast'; history.replaceState(null, '', '?tab=forecast')" :class="tab === 'forecast' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Forecast</button>
             </div>
 
             <!-- Messages -->
@@ -179,9 +194,15 @@
                             <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Monthly Income</label>
                             <input type="number" name="monthly_income" x-model="income" class="w-full bg-slate-50 border-none rounded-3xl py-6 px-8 text-2xl font-black text-slate-900 focus:ring-8 focus:ring-indigo-50">
                         </div>
-                        <div class="space-y-2">
-                            <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Cycle Start Day</label>
-                            <input type="number" name="cycle_start_date" x-model="cycle" min="1" max="31" class="w-full bg-slate-50 border-none rounded-2xl py-5 px-6 font-black text-slate-900 focus:ring-4 focus:ring-indigo-50">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Cycle Start Day</label>
+                                <input type="number" name="cycle_start_date" x-model="cycle" min="1" max="31" class="w-full bg-slate-50 border-none rounded-2xl py-5 px-6 font-black text-slate-900 focus:ring-4 focus:ring-indigo-50">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest ml-4">Currency Symbol</label>
+                                <input type="text" name="currency_symbol" value="{{ $user->currency_symbol }}" class="w-full bg-slate-50 border-none rounded-2xl py-5 px-6 font-black text-slate-900 focus:ring-4 focus:ring-indigo-50" placeholder="e.g. $, €, ৳">
+                            </div>
                         </div>
                         <div class="bg-indigo-50/50 p-6 rounded-[2.5rem] space-y-4">
                             <p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest text-center">Allocation Ratios (%)</p>
@@ -280,14 +301,30 @@
                         @endforeach
                     </div>
 
-                    <!-- Quick Add Box -->
-                    <div class="mb-8 p-4 bg-slate-50 rounded-[2.5rem] border border-slate-100 flex items-center gap-3 focus-within:border-indigo-400 transition-all">
-                        <input type="text" x-model="newCatName" @keyup.enter="addCategory()" placeholder="Add category to this tab..." 
-                            class="flex-1 bg-transparent border-none py-2 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:ring-0">
-                        <button @click="addCategory()" :disabled="isAddingCat" class="bg-indigo-600 text-white px-6 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
-                            <span x-show="!isAddingCat">Add</span>
-                            <span x-show="isAddingCat"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
-                        </button>
+                    <!-- Quick Add Box with Icon Selector -->
+                    <div class="mb-8 space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-[2.5rem] border border-slate-100 flex items-center gap-3 focus-within:border-indigo-400 transition-all">
+                            <!-- Icon Trigger -->
+                            <button @click="showIconPicker = !showIconPicker" type="button" class="h-12 w-12 bg-white rounded-2xl flex items-center justify-center text-xl shadow-sm border border-slate-100 hover:scale-105 transition-transform" x-text="selectedIcon"></button>
+                            
+                            <input type="text" x-model="newCatName" @keyup.enter="addCategory()" placeholder="Add category to this tab..." 
+                                class="flex-1 bg-transparent border-none py-2 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:ring-0">
+                            
+                            <button @click="addCategory()" :disabled="isAddingCat" class="bg-indigo-600 text-white px-6 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
+                                <span x-show="!isAddingCat">Add</span>
+                                <span x-show="isAddingCat"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
+                            </button>
+                        </div>
+
+                        <!-- Icon Grid Picker -->
+                        <div x-show="showIconPicker" x-transition class="p-6 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 grid grid-cols-6 gap-3">
+                            <template x-for="icon in icons">
+                                <button @click="selectedIcon = icon; showIconPicker = false" type="button" 
+                                    class="h-12 w-12 rounded-xl flex items-center justify-center text-xl hover:bg-slate-50 transition-colors"
+                                    :class="selectedIcon === icon ? 'bg-indigo-50 border-2 border-indigo-200' : ''"
+                                    x-text="icon"></button>
+                            </template>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 min-h-[300px]">
@@ -295,9 +332,12 @@
                             <template x-if="catTab === '{{ $type }}'">
                                 <div class="col-span-2 grid grid-cols-2 gap-3">
                                     @forelse($categories[$type] ?? [] as $cat)
-                                        <div class="bg-slate-50 p-5 rounded-3xl border border-slate-100 relative group flex items-center justify-between">
-                                            <p class="text-xs font-black text-slate-800 truncate pr-6">{{ $cat->name }}</p>
-                                            <button @click='editingCategory = @json($cat)' class="h-8 w-8 bg-white text-slate-400 rounded-xl flex items-center justify-center hover:text-indigo-600 shadow-sm"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                                        <div class="bg-slate-50 p-5 rounded-3xl border border-slate-100 relative group flex items-center justify-between gap-3">
+                                            <div class="flex items-center gap-3 overflow-hidden">
+                                                <span class="text-lg">{{ $cat->icon ?? '📁' }}</span>
+                                                <p class="text-xs font-black text-slate-800 truncate">{{ $cat->name }}</p>
+                                            </div>
+                                            <button @click='editingCategory = @json($cat); selectedIcon = editingCategory.icon || "📁"' class="shrink-0 h-8 w-8 bg-white text-slate-400 rounded-xl flex items-center justify-center hover:text-indigo-600 shadow-sm transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
                                         </div>
                                     @empty
                                         <div class="col-span-2 py-20 text-center">
@@ -324,39 +364,159 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-8 rounded-[3.5rem] shadow-xl border border-slate-100">
-                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-8 px-1 text-center">Badge Collection</h3>
+                <div class="bg-white p-8 rounded-[3.5rem] shadow-xl border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-slate-100 rounded-full"></div>
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-10 px-1 text-center mt-4">Prestige Collection</h3>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-6">
                         @php
-                            $allBadgeKeys = ['first_step', 'week_warrior', 'month_master', 'debt_slayer', 'automator'];
+                            $allBadgeKeys = ['first_step', 'digital_twin', 'dreamer', 'week_warrior', 'goal_crusher', 'month_master', 'debt_slayer', 'automator'];
                             $userBadges = Auth::user()->badges ?? [];
                         @endphp
 
                         @foreach($allBadgeKeys as $key)
                             @php $details = \App\Services\GamificationService::getBadgeDetails($key); @endphp
                             @if(in_array($key, $userBadges))
-                                <!-- Earned Badge -->
-                                <div class="bg-slate-50 p-6 rounded-[2.5rem] border-2 border-indigo-100 flex flex-col items-center text-center group active:scale-95 transition-all">
-                                    <div class="h-16 w-16 bg-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm">
-                                        {{ $details['icon'] }}
+                                <!-- Earned Badge (Prestigious Look) -->
+                                <div class="relative group cursor-default">
+                                    <div class="absolute -inset-1 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                                    <div class="relative bg-white p-8 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center shadow-sm">
+                                        <div class="h-20 w-20 bg-slate-50 rounded-3xl flex items-center justify-center text-4xl mb-6 shadow-inner transform group-hover:scale-110 transition-transform duration-500">
+                                            {{ $details['icon'] }}
+                                        </div>
+                                        <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2">{{ $details['name'] }}</h4>
+                                        <p class="text-[8px] font-bold text-slate-400 leading-tight">{{ $details['description'] }}</p>
+                                        <div class="mt-4 px-3 py-1 bg-indigo-50 rounded-full">
+                                            <span class="text-[7px] font-black text-indigo-500 uppercase tracking-widest">UNLOCKED</span>
+                                        </div>
                                     </div>
-                                    <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1">{{ $details['name'] }}</h4>
-                                    <p class="text-[8px] font-bold text-slate-400 leading-tight">{{ $details['description'] }}</p>
                                 </div>
                             @else
-                                <!-- Locked Badge -->
-                                <div class="bg-slate-50 p-6 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center text-center opacity-40 grayscale">
-                                    <div class="h-16 w-16 bg-slate-100 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                                <!-- Locked Badge (Glassmorphic Mystery) -->
+                                <div class="bg-slate-50/50 p-8 rounded-[2.5rem] border-2 border-dashed border-slate-100 flex flex-col items-center text-center opacity-60 grayscale group">
+                                    <div class="h-20 w-20 bg-white/50 backdrop-blur-sm rounded-3xl flex items-center justify-center text-4xl mb-6 shadow-sm border border-white">
                                         🔒
                                     </div>
-                                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ $details['name'] }}</h4>
+                                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{{ $details['name'] }}</h4>
                                     <p class="text-[8px] font-bold text-slate-300 leading-tight">{{ $details['description'] }}</p>
                                 </div>
                             @endif
                         @endforeach
                     </div>
                 </div>
+            </div>
+
+            <!-- Wealth Forecast Content -->
+            <div x-show="tab === 'forecast'" class="space-y-6" x-transition>
+                @if(!$forecastOverview)
+                    <div class="bg-white p-12 rounded-[3.5rem] shadow-xl text-center border border-slate-100">
+                        <div class="h-20 w-20 bg-indigo-50 text-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-3xl">
+                            📊
+                        </div>
+                        <h3 class="text-xl font-black text-slate-900 mb-2">No Budget Plan Detected</h3>
+                        <p class="text-xs text-slate-500 font-bold mb-8 leading-relaxed">We need your 60-25-15 budget settings to calculate your financial future.</p>
+                        <button @click="tab = 'budget'" class="inline-block bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-95 transition-all">Setup Budget Now</button>
+                    </div>
+                @else
+                    <!-- Key Projections -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[3rem] shadow-xl text-white relative overflow-hidden">
+                            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">6 Month Outlook</p>
+                            <h3 class="text-2xl font-black">৳{{ number_format($forecastOverview['six_month_forecast']) }}</h3>
+                        </div>
+                        <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 relative overflow-hidden">
+                            <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-50 rounded-full blur-2xl"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">12 Month Growth</p>
+                            <h3 class="text-2xl font-black text-slate-900">৳{{ number_format($forecastOverview['one_year_forecast']) }}</h3>
+                        </div>
+                    </div>
+
+                    <!-- Main Growth Chart Card -->
+                    <div class="bg-white p-8 rounded-[3.5rem] shadow-xl border border-slate-100 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-10 px-2">
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Wealth Accumulation</h3>
+                            <div class="flex gap-2">
+                                <span class="w-3 h-3 bg-indigo-500 rounded-full"></span>
+                                <span class="w-3 h-3 bg-slate-100 rounded-full"></span>
+                            </div>
+                        </div>
+
+                        <!-- Visual Chart (Elite SVG Representation) -->
+                        <div class="h-40 w-full relative mt-4 mb-8">
+                            <svg class="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:rgb(99, 102, 241);stop-opacity:0.2" />
+                                        <stop offset="100%" style="stop-color:rgb(99, 102, 241);stop-opacity:0" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M 0 40 L 0 35 Q 25 32 50 25 T 100 5 L 100 40 Z" fill="url(#chartGrad)" />
+                                <path d="M 0 35 Q 25 32 50 25 T 100 5" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" />
+                            </svg>
+                        </div>
+
+                        <div class="grid grid-cols-4 text-center px-2">
+                            <div class="space-y-1">
+                                <p class="text-[8px] font-black text-slate-300 uppercase">Now</p>
+                                <p class="text-[10px] font-black text-slate-900">৳0</p>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-[8px] font-black text-slate-300 uppercase">4m</p>
+                                <p class="text-[10px] font-black text-slate-900">৳{{ number_format($forecastOverview['monthly_contribution'] * 4) }}</p>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-[8px] font-black text-slate-300 uppercase">8m</p>
+                                <p class="text-[10px] font-black text-slate-900">৳{{ number_format($forecastOverview['monthly_contribution'] * 8) }}</p>
+                            </div>
+                            <div class="space-y-1 border-l border-slate-100">
+                                <p class="text-[8px] font-black text-indigo-400 uppercase">12m</p>
+                                <p class="text-[10px] font-black text-indigo-600">৳{{ number_format($forecastOverview['one_year_forecast']) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline of Success -->
+                    <div class="bg-slate-900 p-10 rounded-[4rem] shadow-2xl text-white relative overflow-hidden">
+                        <div class="absolute bottom-0 right-0 -mr-20 -mb-20 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                        <h3 class="text-sm font-black uppercase tracking-[0.3em] mb-10 text-center opacity-60">Timeline of Success</h3>
+                        
+                        <div class="space-y-10 relative z-10">
+                            @forelse($activeGoals as $goal)
+                                <div class="flex items-start gap-6 group">
+                                    <div class="flex flex-col items-center">
+                                        <div class="h-12 w-12 bg-white/10 rounded-2xl flex items-center justify-center text-xl shadow-lg border border-white/10 group-hover:bg-white group-hover:text-slate-900 transition-all duration-500">
+                                            {{ $goal->estimated_date ? '🎯' : '⌛' }}
+                                        </div>
+                                        @if(!$loop->last)
+                                            <div class="w-0.5 h-12 bg-white/10 mt-4 rounded-full"></div>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 pt-1">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h4 class="text-sm font-black tracking-tight">{{ $goal->name }}</h4>
+                                            <span class="text-[8px] font-black text-indigo-400 uppercase tracking-widest">
+                                                {{ $goal->estimated_date ? $goal->estimated_date->diffForHumans(['parts' => 1]) : 'Unknown' }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                                <div class="h-full bg-indigo-500 rounded-full" style="width: {{ ($goal->current_amount / $goal->target_amount) * 100 }}%"></div>
+                                            </div>
+                                            <p class="text-[10px] font-black text-white/40 tracking-wider uppercase">
+                                                ETA: {{ $goal->estimated_date ? $goal->estimated_date->format('M Y') : 'N/A' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="py-10 text-center opacity-40">
+                                    <p class="text-[10px] font-black uppercase tracking-widest">No Active Savings Goals</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -367,10 +527,29 @@
                 <form :action="editingCategory ? `{{ url('settings/categories') }}/${editingCategory.id}` : '#'" method="POST" class="space-y-6">
                     @csrf @method('PUT')
                     <input type="hidden" name="active_tab" value="categories">
-                    <input type="text" name="name" :value="editingCategory?.name" class="w-full bg-slate-50 border-none rounded-2xl py-4 px-6 font-bold text-slate-800 focus:ring-8 focus:ring-indigo-50">
+                    
+                    <div class="space-y-2">
+                        <label class="block text-[8px] font-black text-slate-400 uppercase tracking-widest ml-4">Icon & Name</label>
+                        <div class="flex gap-3">
+                            <button @click="showIconPicker = !showIconPicker" type="button" class="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center text-xl shadow-inner border border-slate-100" x-text="selectedIcon"></button>
+                            <input type="text" name="name" :value="editingCategory?.name" class="flex-1 bg-slate-50 border-none rounded-2xl py-4 px-6 font-bold text-slate-800 focus:ring-8 focus:ring-indigo-50">
+                        </div>
+                        <input type="hidden" name="icon" :value="selectedIcon">
+                    </div>
+
+                    <!-- Icon Grid Picker (Edit Mode) -->
+                    <div x-show="showIconPicker" x-transition class="p-6 bg-slate-50 rounded-[2.5rem] grid grid-cols-6 gap-3">
+                        <template x-for="icon in icons">
+                            <button @click="selectedIcon = icon; showIconPicker = false" type="button" 
+                                class="h-10 w-10 rounded-xl flex items-center justify-center text-lg hover:bg-white transition-all shadow-sm"
+                                :class="selectedIcon === icon ? 'bg-white border-2 border-indigo-200 scale-110' : ''"
+                                x-text="icon"></button>
+                        </template>
+                    </div>
+
                     <div class="flex gap-3">
                         <button type="button" @click="editingCategory = null" class="flex-1 bg-slate-100 text-slate-400 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest">Cancel</button>
-                        <button type="submit" class="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg">Save</button>
+                        <button type="submit" class="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg">Save Changes</button>
                     </div>
                 </form>
                 <form :action="editingCategory ? `{{ url('settings/categories') }}/${editingCategory.id}` : '#'" method="POST" class="mt-4">
@@ -441,7 +620,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="block text-[8px] font-black text-slate-400 uppercase tracking-widest ml-4">Deadline (Optional)</label>
-                        <input type="date" name="deadline" class="w-full bg-slate-50 border-none rounded-2xl py-4 px-6 font-bold text-slate-800 focus:ring-8 focus:ring-indigo-50">
+                        <input type="date" name="deadline" onclick="this.showPicker()" class="w-full bg-slate-50 border-none rounded-2xl py-4 px-6 font-bold text-slate-800 focus:ring-8 focus:ring-indigo-50">
                     </div>
                     <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-[10px] uppercase tracking-widest shadow-xl">Lock In Target</button>
                 </form>

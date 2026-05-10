@@ -86,7 +86,7 @@
                         <!-- Start Date -->
                         <div class="bg-slate-50 p-6 rounded-[2.5rem] border @error('next_deduction_date') border-red-500 @else border-transparent @enderror">
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-2">First Payment Date</label>
-                            <input type="date" name="next_deduction_date" value="{{ old('next_deduction_date', date('Y-m-d')) }}" 
+                            <input type="date" name="next_deduction_date" value="{{ old('next_deduction_date', date('Y-m-d')) }}" onclick="this.showPicker()"
                                 class="w-full bg-transparent border-none text-sm font-black text-slate-800 focus:ring-0">
                             @error('next_deduction_date') <p class="text-[9px] font-black text-red-500 mt-2 ml-4 uppercase tracking-widest">{{ $message }}</p> @enderror
                         </div>

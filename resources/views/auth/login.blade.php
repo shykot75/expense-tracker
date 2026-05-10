@@ -20,13 +20,8 @@
         }">
         <div class="sm:mx-auto sm:w-full sm:max-lg">
             <!-- Logo/Icon -->
-            <div
-                class="mx-auto h-20 w-20 bg-white/20 backdrop-blur-xl rounded-3xl flex items-center justify-center shadow-2xl border border-white/30">
-                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                    </path>
-                </svg>
+            <div class="mx-auto h-20 w-20 flex items-center justify-center overflow-hidden">
+                <img src="{{ asset('images/logo.png') }}" class="h-full w-full object-contain" alt="WislySpend Logo">
             </div>
             <h2 class="mt-8 text-center text-3xl font-bold tracking-tight text-white">Welcome Back</h2>
             <p class="mt-2 text-center text-sm text-white/80">Manage your 60-25-15 budget with ease</p>
@@ -129,7 +124,7 @@
                     </div>
 
                     <div class="mt-6 grid grid-cols-1">
-                        <a href="#"
+                        <a href="{{ route('auth.google') }}"
                             class="flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-3 py-3 text-sm font-bold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus-visible:ring-transparent transition-all active:scale-95">
                             <svg class="h-5 w-5" viewBox="0 0 24 24">
                                 <path

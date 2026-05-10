@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="min-h-screen bg-slate-50 pb-32">
         <!-- Header -->
-        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 px-6 pt-16 pb-32 rounded-b-[4rem] shadow-2xl relative overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 px-6 pt-24 pb-32 rounded-b-[4rem] shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
             <div class="flex justify-between items-center relative z-10 mb-8">
                 <h1 class="text-3xl font-black text-white tracking-tight">Loan Tracker</h1>
@@ -14,14 +14,14 @@
             <div class="grid grid-cols-2 gap-4 relative z-10">
                 <div class="bg-white/10 backdrop-blur-md rounded-[2.5rem] p-6 border border-white/10 shadow-xl">
                     <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1">Total Lent</p>
-                    <p class="text-2xl font-black text-white">৳{{ number_format($totalLent) }}</p>
+                    <p class="text-2xl font-black text-white">{{ auth()->user()->currency_symbol }}{{ number_format($totalLent) }}</p>
                     <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full bg-emerald-400" style="width: 100%"></div>
                     </div>
                 </div>
                 <div class="bg-white/10 backdrop-blur-md rounded-[2.5rem] p-6 border border-white/10 shadow-xl">
                     <p class="text-[10px] font-black text-rose-200 uppercase tracking-widest mb-1">Total Borrowed</p>
-                    <p class="text-2xl font-black text-white">৳{{ number_format($totalBorrowed) }}</p>
+                    <p class="text-2xl font-black text-white">{{ auth()->user()->currency_symbol }}{{ number_format($totalBorrowed) }}</p>
                     <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full bg-rose-400" style="width: 100%"></div>
                     </div>
@@ -62,7 +62,7 @@
                                     <h3 class="text-sm font-black text-slate-800">{{ $loan->person_name }}</h3>
                                     <span class="px-2 py-0.5 bg-slate-100 rounded-full text-[8px] font-black uppercase tracking-widest text-slate-400">{{ $loan->loan_type }}</span>
                                 </div>
-                                <p class="text-xl font-black text-slate-900 mt-0.5">৳{{ number_format($loan->amount) }}</p>
+                                <p class="text-xl font-black text-slate-900 mt-0.5">{{ auth()->user()->currency_symbol }}{{ number_format($loan->amount) }}</p>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ $loan->loan_date->format('d M, Y') }}</span>
                                     @if($loan->deadline_date)
@@ -103,11 +103,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-emerald-50/50 p-4 rounded-[2rem] border border-emerald-100/50">
                         <p class="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-1">Recovered</p>
-                        <p class="text-lg font-black text-emerald-900">৳{{ number_format($totalSettledLent) }}</p>
+                        <p class="text-lg font-black text-emerald-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalSettledLent) }}</p>
                     </div>
                     <div class="bg-rose-50/50 p-4 rounded-[2rem] border border-rose-100/50">
                         <p class="text-[8px] font-black text-rose-600 uppercase tracking-widest mb-1">Cleared</p>
-                        <p class="text-lg font-black text-rose-900">৳{{ number_format($totalSettledBorrowed) }}</p>
+                        <p class="text-lg font-black text-rose-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalSettledBorrowed) }}</p>
                     </div>
                 </div>
 
@@ -123,7 +123,7 @@
                                     <h3 class="text-sm font-black text-slate-500 line-through">{{ $loan->person_name }}</h3>
                                     <span class="px-2 py-0.5 bg-slate-50 rounded-full text-[8px] font-black uppercase tracking-widest text-slate-300">Settled</span>
                                 </div>
-                                <p class="text-xl font-black text-slate-400">৳{{ number_format($loan->amount) }}</p>
+                                <p class="text-xl font-black text-slate-400">{{ auth()->user()->currency_symbol }}{{ number_format($loan->amount) }}</p>
                                 <p class="text-[9px] font-bold text-slate-300 uppercase tracking-widest mt-1">Paid on {{ $loan->updated_at->format('d M, Y') }}</p>
                             </div>
                         </div>

@@ -146,7 +146,7 @@ class ExpenseController extends Controller
         $category = Auth::user()->categories()->create([
             'name' => $request->name,
             'budget_type' => $request->budget_type,
-            'icon' => 'tag',
+            'icon' => $request->icon ?? '📁',
         ]);
 
         return response()->json($category);

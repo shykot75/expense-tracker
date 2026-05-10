@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wisly_grad" x1="0" y1="512" x2="512" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10B981"/>
+      <stop offset="1" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+  <path d="M80 200 L180 440 L256 300 L332 440 L450 120 L480 160 L480 40 L360 40 L400 80 L332 320 L256 180 L180 320 L110 160 Z" fill="url(#wisly_grad)"/>
+</svg>

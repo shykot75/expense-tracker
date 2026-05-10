@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="min-h-screen bg-slate-50 pb-32">
         <!-- Header -->
-        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 px-6 pt-16 pb-24 rounded-b-[4rem] shadow-2xl relative overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 px-6 pt-24 pb-24 rounded-b-[4rem] shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
             <div class="flex justify-between items-center relative z-10 mb-8">
                 <div>
@@ -40,15 +40,15 @@
                 @forelse($bills as $bill)
                     <div class="bg-white rounded-[3rem] p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center justify-between relative overflow-hidden group {{ $bill->status === 'paused' ? 'opacity-60 grayscale' : '' }}">
                         <div class="flex items-center gap-5">
-                            <div class="h-14 w-14 rounded-[1.5rem] flex items-center justify-center {{ $bill->status === 'active' ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400' }}">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <div class="h-14 w-14 rounded-[1.5rem] flex items-center justify-center text-2xl shadow-inner {{ $bill->status === 'active' ? 'bg-indigo-50' : 'bg-slate-100' }}">
+                                {{ $bill->category->icon ?? '📁' }}
                             </div>
                             <div>
                                 <div class="flex items-center gap-2">
                                     <h3 class="text-sm font-black text-slate-800">{{ $bill->description }}</h3>
                                     <span class="px-2 py-0.5 bg-slate-100 rounded-full text-[8px] font-black uppercase tracking-widest text-slate-400">{{ $bill->frequency }}</span>
                                 </div>
-                                <p class="text-xl font-black text-slate-900 mt-0.5">৳{{ number_format($bill->amount) }}</p>
+                                <p class="text-xl font-black text-slate-900 mt-0.5">{{ auth()->user()->currency_symbol }}{{ number_format($bill->amount) }}</p>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Next: {{ $bill->next_deduction_date->format('d M, Y') }}</span>
                                     <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[8px] font-black rounded-md uppercase">{{ $bill->category->name }}</span>

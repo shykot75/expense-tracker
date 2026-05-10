@@ -6,6 +6,20 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+    
+    /* Midnight Indigo & Aurora Palette */
+    --color-indigo-600: #4f46e5;
+    --color-indigo-700: #4338ca;
+    --color-indigo-900: #312e81;
+    --color-slate-900: #0f172a;
+    --color-emerald-500: #10b981;
+    --color-rose-500: #f43f5e;
+}
+
+@layer base {
+    body {
+        @apply font-sans text-slate-900 bg-slate-50;
+        -webkit-tap-highlight-color: transparent;
+    }
 }

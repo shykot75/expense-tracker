@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Expense Tracker') }}</title>
+    <title>{{ config('app.name', 'WislySpend') }}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +33,13 @@
 </head>
 <body class="h-full antialiased text-slate-900">
     <div id="app" class="min-h-screen flex flex-col">
+        <!-- Universal Top Header -->
+        @auth
+            @if(!request()->routeIs(['welcome', 'onboarding']))
+                @include('layouts.header')
+            @endif
+        @endauth
+
         <!-- Main Content -->
         <main class="flex-grow pb-32">
             {{ $slot }}

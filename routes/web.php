@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\OnboardingController;
@@ -19,6 +20,11 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [AuthController::class, 'login']);
+
+    // Google OAuth Routes
+    Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+
     Route::get('register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('register', [AuthController::class, 'register']);
 });
@@ -68,8 +74,11 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::get('reports/download', [ReportController::class, 'downloadPdf'])->name('reports.download');
 
     // Savings Goals
-    Route::post('/savings-goals', [SavingsGoalController::class, 'store'])->name('savings-goals.store');
-    Route::put('/savings-goals/{goal}', [SavingsGoalController::class, 'update'])->name('savings-goals.update');
-    Route::post('/savings-goals/{goal}/contribute', [SavingsGoalController::class, 'contribute'])->name('savings-goals.contribute');
-    Route::delete('/savings-goals/{goal}', [SavingsGoalController::class, 'destroy'])->name('savings-goals.destroy');
+    Route::post('savings-goals', [SavingsGoalController::class, 'store'])->name('savings-goals.store');
+    Route::put('savings-goals/{goal}', [SavingsGoalController::class, 'update'])->name('savings-goals.update');
+    Route::post('savings-goals/{goal}/contribute', [SavingsGoalController::class, 'contribute'])->name('savings-goals.contribute');
+    Route::delete('savings-goals/{goal}', [SavingsGoalController::class, 'destroy'])->name('savings-goals.destroy');
+
+    // Wealth Forecast
+    Route::get('analytics/forecast', [\App\Http\Controllers\ForecastController::class, 'index'])->name('analytics.forecast');
 });

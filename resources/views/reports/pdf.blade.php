@@ -44,21 +44,21 @@
             <td width="32%">
                 <div class="summary-card">
                     <span class="summary-label">Total Income</span>
-                    <span class="summary-value"><i class="fa-solid fa-bangladeshi-taka-sign"></i>{{ number_format($totalIncome) }}</span>
+                    <span class="summary-value">{{ $user->currency_symbol }}{{ number_format($totalIncome) }}</span>
                 </div>
             </td>
             <td width="2%"></td>
             <td width="32%">
                 <div class="summary-card">
                     <span class="summary-label">Total Expenses</span>
-                    <span class="summary-value" style="color: #ef4444;"><i class="fa-solid fa-bangladeshi-taka-sign"></i>{{ number_format($totalExpense) }}</span>
+                    <span class="summary-value" style="color: #ef4444;">{{ $user->currency_symbol }}{{ number_format($totalExpense) }}</span>
                 </div>
             </td>
             <td width="2%"></td>
             <td width="32%">
                 <div class="summary-card">
                     <span class="summary-label">Net Savings</span>
-                    <span class="summary-value" style="color: {{ $savings >= 0 ? '#10b981' : '#ef4444' }};"><i class="fa-solid fa-bangladeshi-taka-sign"></i>{{ number_format($savings) }}</span>
+                    <span class="summary-value" style="color: {{ $savings >= 0 ? '#10b981' : '#ef4444' }};">{{ $user->currency_symbol }}{{ number_format($savings) }}</span>
                 </div>
             </td>
         </tr>
@@ -77,7 +77,7 @@
             @foreach($categorySummary as $category => $amount)
                 <tr>
                     <td>{{ $category }}</td>
-                    <td style="text-align: right; font-weight: bold;"><i class="fa-solid fa-bangladeshi-taka-sign"></i>{{ number_format($amount) }}</td>
+                    <td style="text-align: right; font-weight: bold;">{{ $user->currency_symbol }}{{ number_format($amount) }}</td>
                     <td style="text-align: right; color: #64748b;">{{ round(($amount / max(1, $totalExpense)) * 100) }}%</td>
                 </tr>
             @endforeach
@@ -100,14 +100,14 @@
                     <td>{{ $expense->expense_date->format('d M') }}</td>
                     <td>{{ $expense->description }}</td>
                     <td>{{ $expense->category->name }}</td>
-                    <td style="text-align: right; font-weight: bold;"><i class="fa-solid fa-bangladeshi-taka-sign"></i>{{ number_format($expense->amount) }}</td>
+                    <td style="text-align: right; font-weight: bold;">{{ $user->currency_symbol }}{{ number_format($expense->amount) }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <div class="footer">
-        This report was generated automatically by Etar Expense Tracker.<br>
+        This report was generated automatically by WislySpend.<br>
         &copy; {{ date('Y') }} Etar Financial Services.
     </div>
 </body>

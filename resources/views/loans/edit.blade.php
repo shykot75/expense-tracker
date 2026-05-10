@@ -78,13 +78,13 @@
                             <!-- Loan Date -->
                             <div class="bg-slate-50 p-6 rounded-[2.5rem]">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-2">Date</label>
-                                <input type="date" name="loan_date" value="{{ $loan->loan_date->format('Y-m-d') }}" 
+                                <input type="date" name="loan_date" value="{{ $loan->loan_date->format('Y-m-d') }}" onclick="this.showPicker()"
                                     class="w-full bg-transparent border-none text-sm font-black text-slate-800 focus:ring-0">
                             </div>
                             <!-- Due Date -->
                             <div class="bg-slate-50 p-6 rounded-[2.5rem]">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-2">Deadline</label>
-                                <input type="date" name="deadline_date" value="{{ $loan->deadline_date ? $loan->deadline_date->format('Y-m-d') : '' }}" 
+                                <input type="date" name="deadline_date" value="{{ $loan->deadline_date ? $loan->deadline_date->format('Y-m-d') : '' }}" onclick="this.showPicker()"
                                     class="w-full bg-transparent border-none text-sm font-black text-slate-800 focus:ring-0">
                             </div>
                         </div>

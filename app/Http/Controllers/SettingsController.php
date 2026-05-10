@@ -19,11 +19,25 @@ class SettingsController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Silent Badge Sync: Ensure user always sees their latest achievements
+        app(\App\Services\GamificationService::class)->checkBadges($user);
+
         $plan = $user->budgetPlans()->latest()->first();
         $categories = $user->categories()->get()->groupBy('budget_type');
         $goals = $user->savingsGoals()->latest()->get();
 
-        return view('settings.index', compact('user', 'plan', 'categories', 'goals'));
+        // Wealth Forecast Data for the new Tab
+        $forecastService = app(\App\Services\GamificationService::class); // Reusing service container
+        $forecastService = app(\App\Services\ForecastService::class);
+        $forecastOverview = $forecastService->getWealthOverview($user);
+        
+        $activeGoals = $user->savingsGoals()->where('status', 'active')->get()->map(function($goal) use ($forecastService) {
+            $goal->estimated_date = $forecastService->estimateGoalCompletion($goal);
+            return $goal;
+        });
+
+        return view('settings.index', compact('user', 'plan', 'categories', 'goals', 'forecastOverview', 'activeGoals'));
     }
 
     public function updateBudget(Request $request)
@@ -45,6 +59,8 @@ class SettingsController extends Controller
 
             $user = Auth::user();
             $plan = $user->budgetPlans()->latest()->first();
+
+            $user->update(['currency_symbol' => $request->currency_symbol ?? '৳']);
 
             $plan->update([
                 'monthly_income' => $request->monthly_income,
@@ -73,8 +89,14 @@ class SettingsController extends Controller
         $this->authorize('update', $category);
 
         try {
-            $request->validate(['name' => 'required|string|max:255']);
-            $category->update(['name' => $request->name]);
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'icon' => 'nullable|string|max:50'
+            ]);
+            $category->update([
+                'name' => $request->name,
+                'icon' => $request->icon ?? $category->icon ?? '📁'
+            ]);
             return redirect()->route('settings.index', ['tab' => $request->active_tab ?? 'categories'])
                            ->with('success', 'Taxonomy entry updated successfully.');
         } catch (\Exception $e) {

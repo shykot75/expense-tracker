@@ -60,7 +60,7 @@
                                 backgroundColor: '#0f172a',
                                 padding: 15,
                                 callbacks: {
-                                    label: (ctx) => ` ৳${ctx.raw.toLocaleString()} (${((ctx.raw/CHART_TOTAL)*100).toFixed(1)}%)`
+                                    label: (ctx) => ` {{ auth()->user()->currency_symbol }}${ctx.raw.toLocaleString()} (${((ctx.raw/CHART_TOTAL)*100).toFixed(1)}%)`
                                 }
                             }
                         }
@@ -83,7 +83,7 @@
         }
     }" x-init="renderExpenseChart()">
         <!-- Header & Month Switcher -->
-        <div class="bg-gradient-to-br from-slate-900 to-indigo-900 px-6 pt-16 pb-20 rounded-b-[4rem] shadow-2xl">
+        <div class="bg-gradient-to-br from-slate-900 to-indigo-900 px-6 pt-24 pb-20 rounded-b-[4rem] shadow-2xl">
             <div class="flex justify-between items-center mb-8">
                 <button @click="changeMonth(-1)" class="h-12 w-12 bg-white/10 rounded-2xl flex items-center justify-center text-white border border-white/20 active:scale-90 transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
@@ -103,7 +103,7 @@
             <!-- Total Card -->
             <div class="bg-white/10 backdrop-blur-md rounded-[3rem] p-8 border border-white/10 text-center">
                 <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest mb-2">Total Monthly Investment</p>
-                <h2 class="text-5xl font-black text-white">৳{{ number_format($totalSpend, 0) }}</h2>
+                <h2 class="text-5xl font-black text-white">{{ auth()->user()->currency_symbol }}{{ number_format($totalSpend, 0) }}</h2>
             </div>
         </div>
 
@@ -142,15 +142,15 @@
             <div class="space-y-4">
                 @forelse($expenses as $expense)
                     <a href="{{ route('expenses.edit', $expense) }}" class="block bg-white p-6 rounded-[3rem] shadow-sm border border-slate-50 flex items-center gap-5 active:scale-95 transition-all">
-                        <div class="h-14 w-14 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-slate-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div class="h-14 w-14 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-2xl shadow-inner">
+                            {{ $expense->category->icon ?? '📁' }}
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-black text-slate-800 truncate">{{ $expense->description ?: $expense->category->name }}</h4>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">{{ $expense->category->name }} • {{ $expense->expense_date->format('d M, Y') }}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-xl font-black text-slate-900 tracking-tighter">৳{{ number_format($expense->amount, 0) }}</p>
+                            <p class="text-xl font-black text-slate-900 tracking-tighter">{{ auth()->user()->currency_symbol }}{{ number_format($expense->amount, 0) }}</p>
                         </div>
                     </a>
                 @empty

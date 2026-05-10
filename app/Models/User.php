@@ -30,6 +30,7 @@ class User extends Authenticatable
         'cycle_start_date',
         'current_streak',
         'badges',
+        'currency_symbol',
     ];
 
     /**

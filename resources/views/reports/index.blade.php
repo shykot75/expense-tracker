@@ -49,15 +49,15 @@
                     <div class="grid grid-cols-3 gap-2 mb-8">
                         <div>
                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Income</p>
-                            <p class="text-lg font-black text-slate-900">৳{{ number_format($totalIncome) }}</p>
+                            <p class="text-lg font-black text-slate-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalIncome) }}</p>
                         </div>
                         <div class="text-center">
                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Expenses</p>
-                            <p class="text-lg font-black text-rose-500">৳{{ number_format($totalExpense) }}</p>
+                            <p class="text-lg font-black text-rose-500">{{ auth()->user()->currency_symbol }}{{ number_format($totalExpense) }}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Savings</p>
-                            <p class="text-lg font-black {{ $savings >= 0 ? 'text-emerald-500' : 'text-rose-500' }}">৳{{ number_format($savings) }}</p>
+                            <p class="text-lg font-black {{ $savings >= 0 ? 'text-emerald-500' : 'text-rose-500' }}">{{ auth()->user()->currency_symbol }}{{ number_format($savings) }}</p>
                         </div>
                     </div>
 
@@ -83,7 +83,7 @@
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-sm font-black text-slate-700">{{ $category }}</span>
-                                <span class="text-sm font-black text-slate-900">৳{{ number_format($amount) }}</span>
+                                <span class="text-sm font-black text-slate-900">{{ auth()->user()->currency_symbol }}{{ number_format($amount) }}</span>
                             </div>
                             <div class="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
                                 <div class="h-full bg-indigo-500 rounded-full" style="width: {{ $percent }}%"></div>
@@ -99,11 +99,11 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-indigo-50 rounded-[2.5rem] p-6 border border-indigo-100">
                     <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Total Lent</p>
-                    <p class="text-xl font-black text-indigo-900">৳{{ number_format($totalLent) }}</p>
+                    <p class="text-xl font-black text-indigo-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalLent) }}</p>
                 </div>
                 <div class="bg-rose-50 rounded-[2.5rem] p-6 border border-rose-100">
                     <p class="text-[8px] font-black text-rose-400 uppercase tracking-widest mb-1">Borrowed</p>
-                    <p class="text-xl font-black text-rose-900">৳{{ number_format($totalBorrowed) }}</p>
+                    <p class="text-xl font-black text-rose-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalBorrowed) }}</p>
                 </div>
             </div>
         </div>

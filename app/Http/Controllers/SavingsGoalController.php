@@ -21,6 +21,9 @@ class SavingsGoalController extends Controller
 
             Auth::user()->savingsGoals()->create($validated);
 
+            // Award 'Dreamer' badge
+            app(\App\Services\GamificationService::class)->checkBadges(Auth::user());
+
             return redirect()->route('settings.index', ['tab' => $request->active_tab ?? 'goals'])
                            ->with('success', 'Dream target locked in! Let\'s start saving.');
         } catch (\Exception $e) {
@@ -60,6 +63,10 @@ class SavingsGoalController extends Controller
 
             if ($goal->current_amount >= $goal->target_amount) {
                 $goal->update(['status' => 'achieved']);
+                
+                // Award 'Goal Crusher' badge
+                app(\App\Services\GamificationService::class)->checkBadges(Auth::user());
+
                 return redirect()->route('settings.index', ['tab' => $request->active_tab ?? 'goals'])
                                ->with('success', 'CONGRATULATIONS! You\'ve achieved your goal: ' . $goal->name);
             }

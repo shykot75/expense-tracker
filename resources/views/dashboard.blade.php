@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="min-h-screen bg-slate-50 pb-24">
         <!-- Top Stats Section (Dark Mode Style) -->
-        <div class="bg-gradient-to-br from-slate-900 to-indigo-900 px-6 pt-16 pb-24 rounded-b-[4rem] shadow-2xl relative overflow-hidden">
+        <div class="bg-gradient-to-br from-slate-900 to-indigo-900 px-6 pt-24 pb-24 rounded-b-[4rem] shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
             <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl"></div>
 
@@ -33,11 +33,11 @@
             <!-- Central Balance Card -->
             <div class="text-center relative z-10">
                 <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest mb-2">Available Balance</p>
-                <h2 class="text-6xl font-black text-white tracking-tight">৳{{ number_format($totalRemaining, 0) }}</h2>
+                <h2 class="text-6xl font-black text-white tracking-tight">{{ auth()->user()->currency_symbol }} {{ number_format($totalRemaining, 0) }}</h2>
                 <div class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/10">
-                    <span class="text-xs font-black text-white">Spent ৳{{ number_format($totalSpent, 0) }}</span>
+                    <span class="text-xs font-black text-white">Spent {{ auth()->user()->currency_symbol }} {{ number_format($totalSpent, 0) }}</span>
                     <span class="w-1 h-1 bg-white/40 rounded-full"></span>
-                    <span class="text-xs font-black text-indigo-300">{{ number_format($spentPercentage, 1) }}% of Income</span>
+                    <span class="text-xs font-black text-indigo-300">{{ number_format($spentPercentage, 1) }} % of Income</span>
                 </div>
             </div>
         </div>
@@ -63,12 +63,12 @@
                                     <span>{{ ucfirst($type) }}</span>
                                     <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] rounded-md font-bold">{{ $plan->{$type . '_percentage'} }}% Goal</span>
                                 </h3>
-                                <p class="text-[10px] font-bold text-slate-400">৳{{ number_format($breakdown[$type]['remaining'], 0) }} Remaining</p>
+                                <p class="text-[10px] font-bold text-slate-400">{{ auth()->user()->currency_symbol }}{{ number_format($breakdown[$type]['remaining'], 0) }} Remaining</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-black text-slate-900">৳{{ number_format($breakdown[$type]['spent'], 0) }}</p>
-                            <p class="text-[10px] font-bold text-slate-400">of ৳{{ number_format($breakdown[$type]['budget'], 0) }}</p>
+                            <p class="text-sm font-black text-slate-900">{{ auth()->user()->currency_symbol }}{{ number_format($breakdown[$type]['spent'], 0) }}</p>
+                            <p class="text-[10px] font-bold text-slate-400">of {{ auth()->user()->currency_symbol }}{{ number_format($breakdown[$type]['budget'], 0) }}</p>
                         </div>
                     </div>
                     
@@ -90,18 +90,33 @@
                 <div class="flex justify-between items-center px-2">
                     <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Financial Intelligence</h3>
                 </div>
-                <a href="{{ route('reports.index') }}" class="block bg-gradient-to-br from-slate-900 to-indigo-900 p-8 rounded-[3rem] shadow-2xl shadow-indigo-100 relative overflow-hidden active:scale-95 transition-all">
-                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
-                    <div class="flex items-center justify-between relative z-10">
-                        <div>
-                            <h3 class="text-xl font-black text-white">Monthly Reports</h3>
-                            <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest mt-1">Analyze spending & export PDF</p>
+                <div class="grid grid-cols-1 gap-4">
+                    <a href="{{ route('reports.index') }}" class="block bg-gradient-to-br from-slate-900 to-indigo-900 p-8 rounded-[3rem] shadow-2xl shadow-indigo-100 relative overflow-hidden active:scale-95 transition-all">
+                        <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+                        <div class="flex items-center justify-between relative z-10">
+                            <div>
+                                <h3 class="text-xl font-black text-white">Reports</h3>
+                                <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest mt-1">Analyze & Export PDF</p>
+                            </div>
+                            <div class="h-14 w-14 bg-white/10 backdrop-blur-md rounded-[1.5rem] flex items-center justify-center border border-white/20 text-white">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 17v-2a4 4 0 014-4h4m0 0l-4-4m4 4l-4 4m5 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2h2"></path></svg>
+                            </div>
                         </div>
-                        <div class="h-14 w-14 bg-white/10 backdrop-blur-md rounded-[1.5rem] flex items-center justify-center border border-white/20 text-white">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 17v-2a4 4 0 014-4h4m0 0l-4-4m4 4l-4 4m5 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2h2"></path></svg>
+                    </a>
+
+                    <a href="{{ route('settings.index', ['tab' => 'forecast']) }}" class="block bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 relative overflow-hidden active:scale-95 transition-all">
+                        <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-indigo-50 rounded-full blur-2xl"></div>
+                        <div class="flex items-center justify-between relative z-10">
+                            <div>
+                                <h3 class="text-xl font-black text-slate-900">Wealth Forecast</h3>
+                                <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Predict your future wealth</p>
+                            </div>
+                            <div class="h-14 w-14 bg-indigo-50 rounded-[1.5rem] flex items-center justify-center text-indigo-600">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
 
             <!-- Loan Tracker Summary (New) -->
@@ -118,7 +133,7 @@
                             </div>
                             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Lent</span>
                         </div>
-                        <p class="text-xl font-black text-slate-900">৳{{ number_format($totalLent, 0) }}</p>
+                        <p class="text-xl font-black text-slate-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalLent, 0) }}</p>
                     </div>
                     <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group active:scale-95 transition-all">
                         <div class="flex items-center gap-3 mb-3">
@@ -127,7 +142,7 @@
                             </div>
                             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Borrowed</span>
                         </div>
-                        <p class="text-xl font-black text-slate-900">৳{{ number_format($totalBorrowed, 0) }}</p>
+                        <p class="text-xl font-black text-slate-900">{{ auth()->user()->currency_symbol }}{{ number_format($totalBorrowed, 0) }}</p>
                     </div>
                 </a>
             </div>
@@ -142,15 +157,15 @@
                 <div class="space-y-3">
                     @forelse($recentExpenses as $expense)
                         <a href="{{ route('expenses.edit', $expense) }}" class="block bg-white p-5 rounded-[2.5rem] shadow-sm border border-slate-50 flex items-center gap-4 active:scale-95 transition-all">
-                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                            <div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-xl shadow-inner">
+                                {{ $expense->category->icon ?? '📁' }}
                             </div>
                             <div class="flex-1">
                                 <h4 class="text-sm font-black text-slate-800 truncate">{{ $expense->description ?: $expense->category->name }}</h4>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{{ $expense->category->name }} • {{ $expense->expense_date->format('M d') }}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-lg font-black text-slate-900">৳{{ number_format($expense->amount, 0) }}</p>
+                                <p class="text-lg font-black text-slate-900">{{ auth()->user()->currency_symbol }}{{ number_format($expense->amount, 0) }}</p>
                             </div>
                         </a>
                     @empty

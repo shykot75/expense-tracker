@@ -64,6 +64,21 @@ class GamificationService
             $newBadges[] = 'automator';
         }
 
+        // 6. Digital Twin (Linked Google Account)
+        if ($user->google_id && !in_array('digital_twin', $currentBadges)) {
+            $newBadges[] = 'digital_twin';
+        }
+
+        // 7. Dreamer (Created first Savings Goal)
+        if ($user->savingsGoals()->count() >= 1 && !in_array('dreamer', $currentBadges)) {
+            $newBadges[] = 'dreamer';
+        }
+
+        // 8. Goal Crusher (Achieved 100% of a goal)
+        if ($user->savingsGoals()->where('status', 'achieved')->count() >= 1 && !in_array('goal_crusher', $currentBadges)) {
+            $newBadges[] = 'goal_crusher';
+        }
+
         if (!empty($newBadges)) {
             $user->update([
                 'badges' => array_unique(array_merge($currentBadges, $newBadges))
@@ -106,6 +121,24 @@ class GamificationService
                 'description' => 'Configured your first automated bill!',
                 'icon' => '🤖',
                 'color' => 'emerald'
+            ],
+            'digital_twin' => [
+                'name' => 'Digital Twin',
+                'description' => 'Securely linked your Google account!',
+                'icon' => '🎭',
+                'color' => 'sky'
+            ],
+            'dreamer' => [
+                'name' => 'Dreamer',
+                'description' => 'Defined your first financial target!',
+                'icon' => '💭',
+                'color' => 'violet'
+            ],
+            'goal_crusher' => [
+                'name' => 'Goal Crusher',
+                'description' => 'Hit 100% of a financial dream!',
+                'icon' => '💎',
+                'color' => 'amber'
             ]
         ];
 

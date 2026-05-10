@@ -3,6 +3,20 @@
         tab: 'needs',
         categories: {{ $categories->count() > 0 ? $categories->toJson() : '{needs:[], wants:[], savings:[]}' }},
         newCatName: '',
+        selectedIcon: '📁',
+        showIconPicker: false,
+        icons: [
+            '💰', '💳', '🏦', '💹', '💵', '📈', '💎', '🐖', '🏺', /* Finance & Savings */
+            '🏠', '🏢', '🛠️', '🔧', '🧱', /* Home & Tools */
+            '🍔', '🍕', '🌮', '🥪', '🥗', '🥣', '🍽️', '☕', '🥤', '🍻', '🍷', /* Food & Drink */
+            '🛒', '👕', '👜', '👟', '🎁', /* Shopping */
+            '🚗', '🚕', '🚌', '🚄', '✈️', '🚢', '🚲', '⛽', /* Transport & Travel */
+            '🎬', '🍿', '🎮', '🎟️', '🎭', '🎧', '🎸', /* Entertainment */
+            '🏥', '💊', '💉', '🩹', '🩺', '🍎', '🏃', '🧘', /* Health & Wellness */
+            '🧾', '💸', '💡', '🚰', '📶', '🛡️', /* Bills & Security */
+            '🎓', '📚', '🖊️', '💼', '💻', '📱', /* Education & Work */
+            '📁', '⚡', '📅', '📍', '🔔', '✨' /* System & Misc */
+        ],
         isAdding: false,
         selectedCatId: null,
         
@@ -47,7 +61,7 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ name: this.newCatName, budget_type: this.tab })
+                    body: JSON.stringify({ name: this.newCatName, budget_type: this.tab, icon: this.selectedIcon })
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Error');
@@ -99,7 +113,7 @@
                     </div>
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tap to calculate</p>
                     <div class="flex items-center justify-center gap-2">
-                        <span class="text-3xl font-black text-slate-300">৳</span>
+                        <span class="text-3xl font-black text-slate-300">{{ auth()->user()->currency_symbol }}</span>
                         <div class="text-5xl font-black text-slate-900" x-text="amount || '0.00'"></div>
                     </div>
                     @error('amount')
@@ -121,24 +135,35 @@
                         <template x-for="cat in (categories[tab] || [])" :key="cat.id">
                             <label class="relative cursor-pointer">
                                 <input type="radio" name="category_id" :value="cat.id" x-model="selectedCatId" class="peer sr-only">
-                                <div class="p-5 rounded-3xl border-2 border-slate-100 bg-white peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white transition-all text-center shadow-sm">
-                                    <p class="text-sm font-black" x-text="cat.name"></p>
+                                <div class="p-6 rounded-[2.5rem] border-2 border-slate-100 bg-white peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:text-white transition-all text-center shadow-sm group">
+                                    <div class="text-3xl mb-3 group-peer-checked:scale-110 transition-transform" x-text="cat.icon || '📁'"></div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest truncate" x-text="cat.name"></p>
                                 </div>
                             </label>
                         </template>
                         
-                        <!-- Quick Add -->
-                        <div class="col-span-2 mt-4">
-                            <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-3 flex items-center gap-4 focus-within:border-indigo-500 focus-within:ring-8 focus-within:ring-indigo-50 transition-all shadow-sm">
-                                <div class="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-[1.5rem] flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                </div>
+                        <!-- Quick Add with Icon Selector -->
+                        <div class="col-span-2 mt-4 space-y-4">
+                            <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-3 flex items-center gap-3 focus-within:border-indigo-500 transition-all shadow-sm">
+                                <button type="button" @click="showIconPicker = !showIconPicker" class="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-[1.5rem] flex items-center justify-center flex-shrink-0 text-xl" x-text="selectedIcon"></button>
+                                
                                 <input type="text" x-model="newCatName" @keyup.enter="addCategory()" placeholder="New category name..." 
                                     class="flex-1 bg-transparent border-none outline-none ring-0 py-3 text-base font-black text-slate-800 placeholder:text-slate-300 focus:ring-0 focus:outline-none">
+                                
                                 <button type="button" @click="addCategory()" class="bg-indigo-600 text-white px-8 py-3.5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-200 active:scale-90 transition-all" :disabled="isAdding">
                                     <span x-show="!isAdding">Add</span>
                                     <span x-show="isAdding" class="flex items-center"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
                                 </button>
+                            </div>
+
+                            <!-- Icon Grid Picker (Quick Add) -->
+                            <div x-show="showIconPicker" x-transition class="p-6 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 grid grid-cols-6 gap-3">
+                                <template x-for="icon in icons">
+                                    <button @click="selectedIcon = icon; showIconPicker = false" type="button" 
+                                        class="h-12 w-12 rounded-xl flex items-center justify-center text-xl hover:bg-slate-50 transition-colors"
+                                        :class="selectedIcon === icon ? 'bg-indigo-50 border-2 border-indigo-200' : ''"
+                                        x-text="icon"></button>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -148,7 +173,7 @@
                 <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-slate-100 space-y-6">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Transaction Date</label>
-                        <input type="date" name="expense_date" value="{{ old('expense_date', date('Y-m-d')) }}" class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('expense_date') border-red-500 @enderror">
+                        <input type="date" name="expense_date" value="{{ old('expense_date', date('Y-m-d')) }}" onclick="this.showPicker()" class="block w-full rounded-2xl border-slate-100 py-4 px-6 font-bold text-slate-800 bg-slate-50/50 focus:ring-4 focus:ring-indigo-50 @error('expense_date') border-red-500 @enderror">
                         @error('expense_date')
                             <p class="mt-2 ml-4 text-[9px] font-black text-red-500 uppercase tracking-widest">{{ $message }}</p>
                         @enderror

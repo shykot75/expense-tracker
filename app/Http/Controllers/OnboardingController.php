@@ -57,9 +57,21 @@ class OnboardingController extends Controller
             // Only create if user doesn't have any
             if ($user->categories()->count() === 0) {
                 $defaults = [
-                    'needs' => ['Rent', 'Utilities', 'Groceries', 'Transport'],
-                    'wants' => ['Dining Out', 'Entertainment', 'Shopping'],
-                    'savings' => ['Emergency Fund', 'Investment'],
+                    'needs' => [
+                        ['name' => 'Rent', 'icon' => '🏠'],
+                        ['name' => 'Utilities', 'icon' => '⚡'],
+                        ['name' => 'Groceries', 'icon' => '🛒'],
+                        ['name' => 'Transport', 'icon' => '🚗'],
+                    ],
+                    'wants' => [
+                        ['name' => 'Dining Out', 'icon' => '🍔'],
+                        ['name' => 'Entertainment', 'icon' => '🎬'],
+                        ['name' => 'Shopping', 'icon' => '👕'],
+                    ],
+                    'savings' => [
+                        ['name' => 'Emergency Fund', 'icon' => '🏥'],
+                        ['name' => 'Investment', 'icon' => '💹'],
+                    ],
                 ];
 
                 foreach ($defaults as $type => $cats) {
@@ -67,8 +79,8 @@ class OnboardingController extends Controller
                         Category::create([
                             'user_id' => $user->id,
                             'budget_type' => $type,
-                            'name' => $cat,
-                            'icon' => 'tag',
+                            'name' => $cat['name'],
+                            'icon' => $cat['icon'],
                         ]);
                     }
                 }

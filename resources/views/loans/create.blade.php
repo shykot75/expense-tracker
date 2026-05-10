@@ -71,7 +71,7 @@
                             <!-- Loan Date -->
                             <div class="bg-slate-50 p-6 rounded-[2.5rem] border @error('loan_date') border-red-500 @else border-transparent @enderror">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-2">Date</label>
-                                <input type="date" name="loan_date" x-model="loanDate" 
+                                <input type="date" name="loan_date" x-model="loanDate" onclick="this.showPicker()"
                                     class="w-full bg-transparent border-none text-sm font-black text-slate-800 focus:ring-0">
                                 @error('loan_date')
                                     <p class="mt-2 text-[8px] font-black text-red-500 uppercase tracking-widest">{{ $message }}</p>
@@ -80,7 +80,7 @@
                             <!-- Due Date -->
                             <div class="bg-slate-50 p-6 rounded-[2.5rem]">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-2">Deadline</label>
-                                <input type="date" name="deadline_date" 
+                                <input type="date" name="deadline_date" onclick="this.showPicker()"
                                     class="w-full bg-transparent border-none text-sm font-black text-slate-800 focus:ring-0">
                             </div>
                         </div>
