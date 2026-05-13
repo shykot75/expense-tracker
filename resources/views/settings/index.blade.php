@@ -101,15 +101,15 @@
                     <div class="h-20 w-20 rounded-[1.5rem] overflow-hidden border-2 border-white/20 shadow-xl relative">
                         <div x-show="uploading" class="absolute inset-0 bg-slate-900/60 flex items-center justify-center"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
                         @if($user->avatar)
-                            <img src="{{ asset('storage/' . $user->avatar) }}" class="h-full w-full object-cover">
+                            <img src="{{ asset($user->avatar) }}" class="h-full w-full object-cover">
                         @else
                             <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=6366f1&color=fff" class="h-full w-full object-cover">
                         @endif
                     </div>
                     <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatar-form" class="absolute -bottom-2 -right-2" @submit="uploading = true">
                         @csrf
-                        <label class="h-8 w-8 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg cursor-pointer border-2 border-slate-900 active:scale-90 transition-all">
-                            <input type="file" name="avatar" class="hidden" onchange="document.getElementById('avatar-form').requestSubmit()">
+                        <input type="file" id="avatar-input" name="avatar" class="hidden" onchange="document.getElementById('avatar-form').requestSubmit()">
+                        <label for="avatar-input" class="h-8 w-8 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg cursor-pointer border-2 border-slate-900 active:scale-90 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                         </label>
                     </form>
@@ -122,14 +122,14 @@
         </div>
 
         <div class="px-6 -mt-10 pb-32 space-y-6">
-            <!-- Segmented Control (Centered & More Readable) -->
-            <div class="bg-white p-2 rounded-[2.5rem] shadow-xl border border-slate-100 flex justify-center gap-1 overflow-x-auto no-scrollbar">
-                <button @click="tab = 'profile'; history.replaceState(null, '', '?tab=profile')" :class="tab === 'profile' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">My Profile</button>
-                <button @click="tab = 'budget'; history.replaceState(null, '', '?tab=budget')" :class="tab === 'budget' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Budget Hub</button>
-                <button @click="tab = 'categories'; history.replaceState(null, '', '?tab=categories')" :class="tab === 'categories' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Taxonomy</button>
-                <button @click="tab = 'goals'; history.replaceState(null, '', '?tab=goals')" :class="tab === 'goals' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Goals</button>
-                <button @click="tab = 'achievements'; history.replaceState(null, '', '?tab=achievements')" :class="tab === 'achievements' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Achievements</button>
-                <button @click="tab = 'forecast'; history.replaceState(null, '', '?tab=forecast')" :class="tab === 'forecast' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-8 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Forecast</button>
+            <!-- Segmented Control (Scrollable & Responsive) -->
+            <div class="bg-white p-2 rounded-[2.5rem] shadow-xl border border-slate-100 flex justify-start items-center gap-1 overflow-x-auto no-scrollbar px-4">
+                <button @click="tab = 'profile'; history.replaceState(null, '', '?tab=profile')" :class="tab === 'profile' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-6 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">My Profile</button>
+                <button @click="tab = 'budget'; history.replaceState(null, '', '?tab=budget')" :class="tab === 'budget' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-6 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Budget Hub</button>
+                <button @click="tab = 'categories'; history.replaceState(null, '', '?tab=categories')" :class="tab === 'categories' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-6 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Taxonomy</button>
+                <button @click="tab = 'goals'; history.replaceState(null, '', '?tab=goals')" :class="tab === 'goals' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-6 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Goals</button>
+                <button @click="tab = 'achievements'; history.replaceState(null, '', '?tab=achievements')" :class="tab === 'achievements' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-6 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Achievements</button>
+                <button @click="tab = 'forecast'; history.replaceState(null, '', '?tab=forecast')" :class="tab === 'forecast' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400'" class="whitespace-nowrap px-6 py-4 text-[11px] font-black uppercase tracking-widest rounded-[2rem] transition-all">Forecast</button>
             </div>
 
             <!-- Messages -->
@@ -371,7 +371,7 @@
                     <div class="grid grid-cols-2 gap-6">
                         @php
                             $allBadgeKeys = ['first_step', 'digital_twin', 'dreamer', 'week_warrior', 'goal_crusher', 'month_master', 'debt_slayer', 'automator'];
-                            $userBadges = Auth::user()->badges ?? [];
+                            $userBadges = (array)(Auth::user()->badges ?? []);
                         @endphp
 
                         @foreach($allBadgeKeys as $key)

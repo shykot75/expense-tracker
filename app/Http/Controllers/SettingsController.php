@@ -18,26 +18,41 @@ class SettingsController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-        
-        // Silent Badge Sync: Ensure user always sees their latest achievements
-        app(\App\Services\GamificationService::class)->checkBadges($user);
+        try {
+            $user = Auth::user();
+            
+            // Silent Badge Sync: Ensure user always sees their latest achievements
+            try {
+                app(\App\Services\GamificationService::class)->checkBadges($user);
+            } catch (\Exception $e) {
+                \Log::warning('Settings Badge Sync Error: ' . $e->getMessage());
+            }
 
-        $plan = $user->budgetPlans()->latest()->first();
-        $categories = $user->categories()->get()->groupBy('budget_type');
-        $goals = $user->savingsGoals()->latest()->get();
+            $plan = $user->budgetPlans()->latest()->first();
+            $categories = $user->categories()->get()->groupBy('budget_type');
+            $goals = $user->savingsGoals()->latest()->get();
 
-        // Wealth Forecast Data for the new Tab
-        $forecastService = app(\App\Services\GamificationService::class); // Reusing service container
-        $forecastService = app(\App\Services\ForecastService::class);
-        $forecastOverview = $forecastService->getWealthOverview($user);
-        
-        $activeGoals = $user->savingsGoals()->where('status', 'active')->get()->map(function($goal) use ($forecastService) {
-            $goal->estimated_date = $forecastService->estimateGoalCompletion($goal);
-            return $goal;
-        });
+            // Wealth Forecast Data for the new Tab
+            $forecastOverview = null;
+            $activeGoals = collect();
+            
+            try {
+                $forecastService = app(\App\Services\ForecastService::class);
+                $forecastOverview = $forecastService->getWealthOverview($user);
+                
+                $activeGoals = $user->savingsGoals()->where('status', 'active')->get()->map(function($goal) use ($forecastService) {
+                    $goal->estimated_date = $forecastService->estimateGoalCompletion($goal);
+                    return $goal;
+                });
+            } catch (\Exception $e) {
+                \Log::error('Forecast Service Error: ' . $e->getMessage());
+            }
 
-        return view('settings.index', compact('user', 'plan', 'categories', 'goals', 'forecastOverview', 'activeGoals'));
+            return view('settings.index', compact('user', 'plan', 'categories', 'goals', 'forecastOverview', 'activeGoals'));
+        } catch (\Exception $e) {
+            \Log::error('Settings Index Error: ' . $e->getMessage());
+            return redirect()->route('dashboard')->with('error', 'Settings Error: ' . $e->getMessage());
+        }
     }
 
     public function updateBudget(Request $request)

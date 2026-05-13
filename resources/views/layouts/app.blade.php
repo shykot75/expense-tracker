@@ -10,9 +10,11 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
-    <!-- Fonts -->
+    <!-- Performance Hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
@@ -22,6 +24,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            padding-top: var(--safe-area-inset-top, 0px);
         }
         .glass-card {
             background: rgba(255, 255, 255, 0.8);
@@ -29,10 +32,35 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+        
+        /* Ensure auth screens have enough top margin */
+        .auth-container {
+            padding-top: calc(var(--safe-area-inset-top, 0px) + 2rem);
+        }
     </style>
 </head>
 <body class="h-full antialiased text-slate-900">
     <div id="app" class="min-h-screen flex flex-col">
+        <!-- Global Loading Overlay -->
+        <div x-data="{ loading: false }" 
+             @submit.window="loading = true" 
+             @page-finished.window="loading = false"
+             x-show="loading" 
+             class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-md"
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+        >
+            <div class="relative">
+                <div class="h-20 w-20 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="h-10 w-10 bg-white rounded-2xl rotate-45 animate-pulse"></div>
+                </div>
+            </div>
+            <p class="mt-8 text-white text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Processing Transaction</p>
+        </div>
+
         <!-- Universal Top Header -->
         @auth
             @if(!request()->routeIs(['welcome', 'onboarding']))
@@ -135,5 +163,25 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+            
+            // Dispatch event to show global loader
+            window.dispatchEvent(new CustomEvent('submit'));
+
+            // Disable buttons to prevent double click
+            submitButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+        });
+
+        // Hide loader when page is restored from cache (back button)
+        window.addEventListener('pageshow', function(event) {
+            window.dispatchEvent(new CustomEvent('page-finished'));
+        });
+    </script>
 </body>
 </html>

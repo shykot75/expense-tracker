@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="min-h-screen flex flex-col justify-center px-6 py-12 lg:px-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500" x-data="{ loading: false, showPassword: false }">
+    <div class="min-h-screen auth-container flex flex-col justify-start px-6 py-12 lg:px-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500" x-data="{ loading: false, showPassword: false }">
         <div class="sm:mx-auto sm:w-full sm:max-lg">
             <!-- Logo -->
             <div class="mx-auto h-20 w-20 flex items-center justify-center overflow-hidden mb-8">

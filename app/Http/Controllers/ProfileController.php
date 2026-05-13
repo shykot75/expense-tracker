@@ -69,31 +69,28 @@ class ProfileController extends Controller
             'avatar' => ['required', 'image', 'max:5120'],
         ]);
 
-        $user = Auth::user();
-
-        if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
-        }
-
         try {
-            if (extension_loaded('gd')) {
-                $manager = new ImageManager(new Driver());
-                $image = $manager->read($request->file('avatar'));
-                $image->cover(200, 200);
-                $filename = 'avatars/' . $request->file('avatar')->hashName();
-                Storage::disk('public')->put($filename, (string) $image->toJpeg());
-                $user->update(['avatar' => $filename]);
-                return back()->with('success', 'Your new avatar is live and optimized!');
-            } else {
-                $path = $request->file('avatar')->store('avatars', 'public');
-                $user->update(['avatar' => $path]);
-                return back()->with('success', 'Avatar updated successfully.');
+            $user = Auth::user();
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // Direct path to public folder to bypass symlink issues
+            $publicPath = public_path('avatars');
+            if (!file_exists($publicPath)) {
+                mkdir($publicPath, 0777, true);
             }
+
+            // Move the file
+            $file->move($publicPath, $filename);
+            
+            // Save relative path for the asset() helper
+            $user->update(['avatar' => 'avatars/' . $filename]);
+
+            return back()->with('success', 'Profile picture updated successfully!');
+
         } catch (\Exception $e) {
             \Log::error('Avatar Update Error: ' . $e->getMessage());
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->update(['avatar' => $path]);
-            return back()->with('success', 'Avatar updated (Standard mode).');
+            return back()->with('error', 'Failed to upload image: ' . $e->getMessage());
         }
     }
 

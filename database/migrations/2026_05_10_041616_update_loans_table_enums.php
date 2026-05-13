@@ -12,9 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // We use raw SQL because modifying enum columns via Blueprint requires doctrine/dbal and can be problematic
-        DB::statement("ALTER TABLE loans MODIFY COLUMN loan_type ENUM('lent', 'borrowed') NOT NULL");
-        DB::statement("ALTER TABLE loans MODIFY COLUMN status ENUM('active', 'paid') NOT NULL DEFAULT 'active'");
+        Schema::table('loans', function (Blueprint $table) {
+            $table->string('loan_type')->change();
+            $table->string('status')->default('active')->change();
+        });
     }
 
     /**
@@ -22,7 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE loans MODIFY COLUMN loan_type ENUM('given', 'taken') NOT NULL");
-        DB::statement("ALTER TABLE loans MODIFY COLUMN status ENUM('pending', 'settled') NOT NULL DEFAULT 'pending'");
+        Schema::table('loans', function (Blueprint $table) {
+            $table->string('loan_type')->change();
+            $table->string('status')->default('active')->change();
+        });
     }
 };
